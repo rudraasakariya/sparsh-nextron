@@ -9,15 +9,17 @@ import path from "node:path";
 import { exec } from "node:child_process";
 
 import { io } from "socket.io-client";
-const socketInstance = io(`http://localhost:${process.env.PORT}`);
+const socketMain = io(`http://localhost:${process.env.PORT}`);
+const socketRenderer = io(`http://localhost:${process.env.FRONTEND_PORT}`);
+console.log(`http://localhost:${process.env.FRONTEND_PORT}`);
 
-import { clipboard } from "electron";
+import { clipboard , ipcRenderer } from "electron";
 
 import mime from "mime-types";
 
 // * Getting the Email from the Socket.io Connection
 let email = null;
-socketInstance.on("token", (token) => {
+socketMain.on("token", (token) => {
   email = token;
 });
 
@@ -61,6 +63,7 @@ export async function downloadFile() {
 
   // * Creating the File in the Temp Folder dynamically
   const normalFilePath = path.join(os.tmpdir(), fileMetaData.data.name).toString("ucs2");
+  // TODO: Change the regex according to the OS
   const filePath = path.toNamespacedPath(normalFilePath).replace("\\\\?\\", "");
   // * Creating the File in the Temp Folder
   try {
@@ -127,7 +130,10 @@ export async function uploadFile() {
           },
         });
 
-      socketInstance.emit("file-uploaded", file);
+      // Broadcast to all sockets
+      socketMain.emit("fileUploaded", {
+        ...file.data,
+      });
     }
 
     // * Getting File Id and Updating it
@@ -140,7 +146,6 @@ export async function uploadFile() {
         if (element.id === "" && element.time === "") {
           // * Uploading File to Google Drive
           await driveUpload(fileObject);
-          socketInstance.emit("file-uploaded", fileObject);
           console.log("Uploading File to Google Drive as the File Id is Empty");
           break;
         } else if (element.id !== "" && element.time !== "") {
@@ -161,8 +166,6 @@ export async function uploadFile() {
           });
           // * Updating the Old File to New File
           await driveUpload(minTimeFile);
-
-          socketInstance.emit("file-uploaded", minTimeFile);
 
           // * Updating the File Id in the Database and Setting the Text to Empty
           // await db
@@ -186,7 +189,6 @@ export async function uploadFile() {
       //     break;
       //   }
     }
-    socketInstance.emit("file-uploaded" , "File uploaded")
     console.log("Uploaded Successfully!");
   } catch (error) {
     throw Error(error);

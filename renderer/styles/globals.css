@@ -11,12 +11,14 @@
 }
 
 .modal {
+	/* Add margin top to avoid overlapping with the header */
+	margin-top: 2.5em;
 	background-color: hsl(var(--hue),10%,95%);
 	border-radius: 1em;
 	box-shadow: 0 0.75em 1em hsla(var(--hue),10%,5%,0.3);
 	color: hsl(var(--hue),10%,5%);
 	width: calc(100%);
-	max-width: 39.5em;
+	max-width: 55.5em;
 	overflow: hidden;
 	position: relative;
 	transition:
@@ -99,6 +101,8 @@
 .modal__progress-value {
 	color: hsl(var(--hue),10%,30%);
 	transition: color var(--trans-dur);
+	/* Center align font */
+	text-align: center;
 }
 .modal__close-button {
 	background-color: transparent;
@@ -373,8 +377,8 @@ main {
 
 .card {
   position: relative;
-  width: 220px;
-  height: 200px;
+  width: 300px;
+  height: 180px;
   background-color: hsl(var(--hue),10%,10%);
   color: hsl(var(--hue),10%,95%);
   display: flex;
@@ -385,8 +389,21 @@ main {
   border-radius: 10px;
   cursor: pointer;
 
+  text-align: center;
+
+  /* Add gap between cards */
+  margin: 10px;
+
   /* Add shadow to each card */
   box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+}
+
+/* On smaller mobile screens, make the cards render horizontally */
+@media (max-width: 500px) {
+  .card {
+	width: 180px;
+	height: 300px;
+  }
 }
 
 .card::before,

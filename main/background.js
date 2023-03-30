@@ -8,7 +8,7 @@ import { Server } from "socket.io";
 import cors from "cors";
 
 // * Importing Electron Modules
-import { app, globalShortcut, shell } from "electron";
+import { app, globalShortcut, shell, ipcMain } from "electron";
 import Store from "electron-store";
 import clipboardListener from "clipboard-event";
 import serve from "electron-serve";
@@ -18,6 +18,8 @@ import { createWindow } from "./helpers";
 import * as SystemFileHandler from "../main/backend/fileHandler/systemFileHandler";
 import routes from "./backend/routes/index.js";
 import oauth2Client from "./backend/googleAuth/OAuth2Client";
+
+import { initializeUser } from "./backend/middleware/CheckUser";
 
 const appexpress = express();
 // * Configuring CORS (so annoying fr)
@@ -48,8 +50,10 @@ server.listen(process.env.PORT || 5000, () => {
   console.log(`Server listening on port ${process.env.PORT || 5000}`);
 });
 
+initializeUser();
+
 // * Listening for the connection event
-const socket = io.on("connection", (socket) => {
+io.on("connection", (socket) => {
   // * Listening for the `token` event
   if (token) {
     oauth2Client.setCredentials(token);
@@ -60,10 +64,14 @@ const socket = io.on("connection", (socket) => {
   socket.on("authenticated", (userToken) => {
     store.set("user-token", userToken);
     oauth2Client.setCredentials(userToken);
-    socket.emit("token", userToken);
+    socket.emit("token", userToken.email);
     startApp();
   });
-  return socket;
+
+  socket.on("fileUploaded", () => {
+    // Broadcast to all connected clients
+    io.emit("fileUploaded");
+  });
 });
 
 // * Configuring Electron Window
@@ -86,6 +94,8 @@ async function startApp() {
   } else {
     const port = process.argv[2];
     await mainWindow.loadURL(`http://localhost:${port}/home`);
+    // Remove the top menu bar
+    mainWindow.removeMenu();
     // mainWindow.webContents.openDevTools();
   }
 }
@@ -117,6 +127,12 @@ async function startAuth() {
 
   globalShortcut.register("CommandOrControl+D", SystemFileHandler.downloadFile);
 })();
+
+
+// * Opens the link in the default browser and downloads the file for user
+ipcMain.on("downloadLink", (event, args) => {
+  shell.openExternal(args);
+});
 
 app.on("window-all-closed", () => {
   app.quit();

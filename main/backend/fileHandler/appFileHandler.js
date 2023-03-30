@@ -2,13 +2,13 @@ import { google } from "googleapis";
 import oauth2Client from "../googleAuth/OAuth2Client.js";
 import db from "../firebase/firebase.js";
 
-const email = "rudrasakariya16@gmail.com";
+
 
 // * Getting Files from Google Drive and Sending to the Frontend
 export async function getFiles(req, res) {
   const drive = google.drive({ version: "v3", auth: oauth2Client });
   // * Fetching ID from Database
-  const file_ID = await db.collection("user-data").doc(email).get();
+  const file_ID = await db.collection("user-data").doc(req.email).get();
 
   const files = [];
 
