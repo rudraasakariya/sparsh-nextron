@@ -9,9 +9,11 @@ class UploadModal {
   progress = 0;
   progressTimeout = null;
   state = 0;
+  shareEmail = "";
 
-  constructor(el) {
+  constructor(el, shareEmail) {
     this.el = document.querySelector(el);
+    this.shareEmail = shareEmail;
     // Listen for file drop on the entire window
     window.addEventListener("dragover", (e) => e.preventDefault());
     window.addEventListener("drop", (e) => {
@@ -87,9 +89,13 @@ class UploadModal {
         reader.onload = (e2) => {
           // @Rudra: This is where you can get the file data target.files[0] is the file object.
           axios
-            .post(`http://localhost:${process.env.NEXT_PUBLIC_PORT}/drop-upload`, {
-              filePath: target.files[0].path,
-            })
+            .post(
+              `http://localhost:${process.env.NEXT_PUBLIC_PORT}/shareable-file`,
+              {
+                filePath: target.files[0].path,
+                shareEmail: shareEmail,
+              }
+            )
             .then((res) => {
               this.fileDisplay(target.files[0].name);
             })
@@ -171,9 +177,9 @@ class Utils {
   }
 }
 
-export default function Upload() {
+export default function UploadFriend({ shareEmail }) {
   React.useEffect(() => {
-    let upload = new UploadModal("#upload");
+    let upload = new UploadModal("#upload", shareEmail);
 
     return () => {
       upload = null;

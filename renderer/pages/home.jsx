@@ -5,6 +5,12 @@ import { useEffect, useState } from "react";
 import { modals } from "@mantine/modals";
 
 export function Home() {
+  const [user, setUser] = useState({
+    name: "John Doe",
+    email: "adad@vard.com",
+    photoURL:
+      "https://lh3.googleusercontent.com/a/AGNmyxbQGWVuZg8O4Z7eIK4Czpo8JgYmAy6NN1plupox=s96-c",
+  });
   useEffect(() => {
     let blob = document.getElementsByClassName("blob");
 
@@ -30,7 +36,19 @@ export function Home() {
     document.documentElement.classList.add("dark");
   }, []);
 
-  const [friendsOpened, setFriendsOpened] = useState(false);
+  useEffect(() => {
+    /*
+    axios
+      .get(`http://localhost:${process.env.NEXT_PUBLIC_PORT}/me`)
+      .then((res) => {
+        const user = res.data;
+        setUser(user);
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+      */
+  }, []);
 
   return (
     <div
@@ -75,12 +93,16 @@ export function Home() {
           <div className="h-full px-3 py-4 overflow-y-auto bg-gray-50 dark:bg-gray-800">
             <a href="#" className="flex items-center pl-2.5 mb-5">
               <img
-                src="https://avatars.githubusercontent.com/u/45114019?v=4"
+                src={
+                  user
+                    ? "https://lh3.googleusercontent.com/a/AGNmyxbQGWVuZg8O4Z7eIK4Czpo8JgYmAy6NN1plupox=s96-c"
+                    : "https://lh3.googleusercontent.com/a/AGNmyxbQGWVuZg8O4Z7eIK4Czpo8JgYmAy6NN1plupox=s96-c"
+                }
                 className="h-6 mr-3 sm:h-7 rounded-full"
                 alt="User Avatar"
               />
               <span className="self-center text-xl font-semibold whitespace-nowrap dark:text-white">
-                Lebyy
+                {user ? user.name : "John Doe"}
               </span>
             </a>
             <ul className="space-y-2 font-medium">
@@ -146,19 +168,19 @@ export function Home() {
         </aside>
         <div className="p-4 sm:ml-64">
           <div className="p-4 border-2 border-gray-200 border-dashed rounded-lg dark:border-gray-700">
-            <div className="grid grid-cols-2 gap-5 mb-4 items-center">
+            <div className="grid grid-cols-2 mb-4 items-center">
               <form>
                 <input
                   type="text"
                   id="first_name"
-                  className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                  className="w-full bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
                   placeholder="Hello World!"
                   required
                 />
               </form>
               <a
                 href="#"
-                className="block w-full p-6 bg-white border border-gray-200 rounded-lg shadow hover:bg-gray-100 dark:bg-gray-800 dark:border-gray-700 dark:hover:bg-gray-700 justify-self-end"
+                className="block w-30 p-6 bg-white border border-gray-200 rounded-lg shadow hover:bg-gray-100 dark:bg-gray-800 dark:border-gray-700 dark:hover:bg-gray-700 justify-self-end"
               >
                 <p
                   className="font-normal text-gray-700 dark:text-gray-400"
@@ -168,7 +190,7 @@ export function Home() {
                     );
                   }}
                 >
-                  A text that I copied from the internet
+                  Receive Text
                 </p>
               </a>
             </div>
