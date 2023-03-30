@@ -16,5 +16,6 @@ routes.get("/download", CheckUser, SystemFileHandler.downloadFile);
 
 // * Routes to handle frontend requests
 routes.get("/get-files", CheckUser, AppFileHandler.getFiles);
+routes.get("/drop-upload", CheckUser, AppFileHandler.uploadFile);
 
 export default routes;
