@@ -70,21 +70,19 @@ function Card() {
   // }, []);
 
   return (
-    <div className="mx-auto max-w-2xl  px-1 sm:py-4 sm:px-3 lg:max-w-7xl lg:px-8">
-      <div className="grid grid-cols-1 gap-y-10 gap-x-6 sm:grid-cols-3">
-        {files.map((file, index) => (
-          <div
-            className="card"
-            key={index}
-            onClick={() => {
-              ipcRenderer.send("downloadLink", file.webContentLink);
-              // window.open(file.webContentLink);
-            }}
-          >
-            {file.name}
-          </div>
-        ))}
-      </div>
+    <div className="grid grid-cols-3 gap-4 mb-4">
+      {files.map((file, index) => (
+        <div
+          className="flex items-center justify-center h-24 rounded bg-gray-50 dark:bg-gray-800 card"
+          key={index}
+          onClick={() => {
+            ipcRenderer.send("downloadLink", file.webContentLink);
+            // window.open(file.webContentLink);
+          }}
+        >
+          {file.name}
+        </div>
+      ))}
     </div>
   );
 }

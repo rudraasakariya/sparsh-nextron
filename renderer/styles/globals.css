@@ -2,6 +2,10 @@
 @tailwind components;
 @tailwind utilities;
 
+html {
+    color-scheme: dark;
+}
+
 :root {
 	--hue: 223;
 	--bg: hsl(var(--hue),10%,85%);
@@ -18,7 +22,6 @@
 	box-shadow: 0 0.75em 1em hsla(var(--hue),10%,5%,0.3);
 	color: hsl(var(--hue),10%,5%);
 	width: calc(100%);
-	max-width: 55.5em;
 	overflow: hidden;
 	position: relative;
 	transition:
@@ -342,7 +345,7 @@ main {
   }
 }
 
-#blob {
+.blob {
   height: 34vmax;
   aspect-ratio: 1;
   position: absolute;
@@ -356,14 +359,15 @@ main {
 }
 
 #blur {
-  z-index: 2;
-  backdrop-filter: blur(12vmax);
+  filter: blur(12vmax);
   /* Occupy entire screen */
   position: fixed;
   width: 100%;
   height: 100%;
   left: 0;
   top: 0;
+
+  z-index: -1;
 }
 
 /* Animations */
@@ -377,34 +381,16 @@ main {
 
 .card {
   position: relative;
-  width: 300px;
-  height: 180px;
   background-color: hsl(var(--hue),10%,10%);
   color: hsl(var(--hue),10%,95%);
-  display: flex;
-  align-items: center;
-  justify-content: center;
   font-size: 25px;
   font-weight: bold;
   border-radius: 10px;
   cursor: pointer;
-
   text-align: center;
-
-  /* Add gap between cards */
-  margin: 10px;
-
-  /* Add shadow to each card */
-  box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+  height: 180px;
 }
 
-/* On smaller mobile screens, make the cards render horizontally */
-@media (max-width: 500px) {
-  .card {
-	width: 180px;
-	height: 300px;
-  }
-}
 
 .card::before,
 .card::after {
