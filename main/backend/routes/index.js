@@ -6,6 +6,7 @@ import * as SystemFileHandler from "../fileHandler/systemFileHandler.js";
 import * as AppFileHandler from "../fileHandler/appFileHandler.js";
 import * as ShareableFileHandler from "../shareableFileController/shareableFileController.js";
 import * as FriendController from "../shareableFileController/friendController.js";
+import * as UserController from "../userController/userController.js";
 import CheckUser from "../middleware/CheckUser.js";
 
 // * Routes to handle login and authentication
@@ -21,10 +22,12 @@ routes.get("/get-files", CheckUser, AppFileHandler.getFiles);
 routes.post("/drop-upload", CheckUser, AppFileHandler.uploadFile);
 
 // * Routes to handle Shareable File requests
-routes.get("/shareable-file", CheckUser, ShareableFileHandler.uploadFile);
+routes.post("/shareable-file", CheckUser, ShareableFileHandler.uploadFile);
 
 // * Routes to handle Frineds
 routes.post("/add-friend", CheckUser, FriendController.addFriend);
 routes.get("/get-friends", CheckUser, FriendController.getFriends);
+
+routes.get("/me", CheckUser, UserController.getUserInfo);
 
 export default routes;

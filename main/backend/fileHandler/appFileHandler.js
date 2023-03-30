@@ -46,7 +46,7 @@ export async function getFiles(req, res) {
 export async function uploadFile(req, res) {
   const drive = google.drive({ version: "v3", auth: oauth2Client });
   // TODO: Change the regex according to the OS
-  const filePath = req.data.filePath;
+  const filePath = req.body.filePath;
   // * String Manipulation to get the File Name and File Type
   const fileName = filePath.split("\\").pop();
   const fileType = fileName.split(".").pop();

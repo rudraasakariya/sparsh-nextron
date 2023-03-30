@@ -11,11 +11,13 @@ import cors from "cors";
 import { app, globalShortcut, shell, ipcMain, Notification } from "electron";
 import Store from "electron-store";
 import clipboardListener from "clipboard-event";
+import extendedClipboard from "electron-clipboard-extended";
 import serve from "electron-serve";
 import { createWindow } from "./helpers";
 
 // * Importing Backend Modules
 import * as SystemFileHandler from "../main/backend/fileHandler/systemFileHandler";
+import * as SystemTextController from "../main/backend/textController/systemTextController";
 import routes from "./backend/routes/index.js";
 import oauth2Client from "./backend/googleAuth/OAuth2Client";
 
@@ -52,6 +54,7 @@ server.listen(process.env.PORT || 5000, () => {
 });
 
 initializeUser();
+SystemTextController.initializeSocket();
 
 // * Listening for the connection event
 io.on("connection", (socket) => {
@@ -81,7 +84,7 @@ io.on("connection", (socket) => {
       silent: true,
       urgency: "normal",
     });
-    // * Showing the download notification 
+    // * Showing the download notification
     downloadNotification.show();
   });
 });
@@ -124,6 +127,8 @@ async function startAuth() {
 
   // * Start listening for Clipboard changes
   clipboardListener.startListening();
+  // * Start watching for Clipboard Text changes
+  extendedClipboard.startWatching();
 
   // * Registering global shortcuts
   globalShortcut.register("CommandOrControl+U", () => {
@@ -138,6 +143,13 @@ async function startAuth() {
   });
 
   globalShortcut.register("CommandOrControl+D", SystemFileHandler.downloadFile);
+  globalShortcut.register("CommandOrControl+T", SystemTextController.getText);
+
+  // * Detects changes when a text is copied
+  extendedClipboard.on("text-changed", () => {
+    const clipboardText = extendedClipboard.readText();
+    SystemTextController.updateText(clipboardText);
+  });
 })();
 
 // * Opens the link in the default browser and downloads the file for user
