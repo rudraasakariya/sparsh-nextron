@@ -8,7 +8,7 @@ import { Server } from "socket.io";
 import cors from "cors";
 
 // * Importing Electron Modules
-import { app, globalShortcut, shell, ipcMain } from "electron";
+import { app, globalShortcut, shell, ipcMain, Notification } from "electron";
 import Store from "electron-store";
 import clipboardListener from "clipboard-event";
 import serve from "electron-serve";
@@ -22,6 +22,7 @@ import oauth2Client from "./backend/googleAuth/OAuth2Client";
 import { initializeUser } from "./backend/middleware/CheckUser";
 
 const appexpress = express();
+appexpress.use(express.json());
 // * Configuring CORS (so annoying fr)
 appexpress.use(
   cors({
@@ -71,6 +72,17 @@ io.on("connection", (socket) => {
   socket.on("fileUploaded", () => {
     // Broadcast to all connected clients
     io.emit("fileUploaded");
+  });
+  socket.on("fileDownloaded", (data) => {
+    const downloadNotification = Notification({
+      title: "File Synced",
+      body: `${data} has been synced`,
+      icon: path.join(__dirname, "assets", "notification-icon.png"),
+      silent: true,
+      urgency: "normal",
+    });
+    // * Showing the download notification 
+    downloadNotification.show();
   });
 });
 
@@ -127,7 +139,6 @@ async function startAuth() {
 
   globalShortcut.register("CommandOrControl+D", SystemFileHandler.downloadFile);
 })();
-
 
 // * Opens the link in the default browser and downloads the file for user
 ipcMain.on("downloadLink", (event, args) => {
