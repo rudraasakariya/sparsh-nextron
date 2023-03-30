@@ -1,5 +1,5 @@
+import axios from "axios";
 import React from "react";
-
 // Instructions on line 80
 
 class UploadModal {
@@ -12,7 +12,19 @@ class UploadModal {
 
   constructor(el) {
     this.el = document.querySelector(el);
-    console.log(el);
+    // Listen for file drop on the entire window
+    window.addEventListener("dragover", (e) => e.preventDefault());
+    window.addEventListener("drop", (e) => {
+      e.preventDefault();
+      console.log(e)
+      const event = new Event("click");
+      const event2 = new Event("change");
+      const fileField = document.getElementById("file");
+
+      fileField.files = e.dataTransfer.files;
+      document.getElementById("upload").dispatchEvent(event);
+      fileField.dispatchEvent(event2);
+    });
     this.el?.addEventListener("click", this.action.bind(this));
     this.el?.querySelector("#file")?.addEventListener("change", this.fileHandle.bind(this));
   }
@@ -30,7 +42,6 @@ class UploadModal {
     this.progressDisplay();
     this.fileReset();
   }
-
   async copy() {
     const copyButton = this.el?.querySelector("[data-action='copy']");
 
@@ -76,8 +87,16 @@ class UploadModal {
         let reader = new FileReader();
         reader.onload = (e2) => {
           // @Rudra: This is where you can get the file data target.files[0] is the file object.
-
-          this.fileDisplay(target.files[0].name);
+          axios
+            .post(`http://localhost:${process.env.NEXT_PUBLIC_PORT}/drop-upload`, {
+              filePath: target.files[0].path,
+            })
+            .then((res) => {
+              this.fileDisplay(target.files[0].name);
+            })
+            .catch((err) => {
+              console.log(err);
+            });
         };
         reader.readAsDataURL(target.files[0]);
       }
@@ -160,6 +179,17 @@ export default function Upload() {
     return () => {
       upload = null;
     };
+  }, []);
+
+  const onDrop = React.useCallback((acceptedFiles) => {
+    /*
+    Fire the events with the file:
+    this.el?.addEventListener("click", this.action.bind(this));
+    this.el?.querySelector("#file")?.addEventListener("change", this.fileHandle.bind(this));
+    */
+    acceptedFiles.forEach((file) => {
+      
+    });
   }, []);
 
   return (
