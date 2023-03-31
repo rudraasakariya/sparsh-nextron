@@ -1,12 +1,20 @@
 import { google } from "googleapis";
 import oauth2Client from "../googleAuth/OAuth2Client.js";
 import db from "../firebase/firebase.js";
+import mime from "mime-types";
+import fs from "node:fs";
+
+import { io } from "socket.io-client";
+const socketMain = io(`http://localhost:${process.env.PORT}`);
 
 // * Getting Files from Google Drive and Sending to the Frontend
 export async function getFiles(req, res) {
   const drive = google.drive({ version: "v3", auth: oauth2Client });
   // * Fetching ID from Database
-  const file_ID = await db.collection("user-data").doc(req.email).get();
+  const file_ID = await db
+    .collection("user-data")
+    .doc(await req.email)
+    .get();
 
   const files = [];
 
@@ -68,10 +76,19 @@ export async function uploadFile(req, res) {
         requestBody,
         media: media,
       });
+
+      const fileMetaData = await drive.files.get(
+        {
+          fileId: await file.data.id,
+          fields: "*",
+        },
+        { responseType: "json" }
+      );
+
       // * Updating the File Id in the Database
       await db
         .collection("user-data")
-        .doc(email)
+        .doc(await req.email)
         .update({
           [key]: {
             id: await file.data.id,
@@ -81,12 +98,19 @@ export async function uploadFile(req, res) {
 
       // * Broadcast to all sockets
       socketMain.emit("fileUploaded", {
-        ...file.data,
+        id: fileMetaData.data.id,
+        name: fileMetaData.data.name,
+        webContentLink: fileMetaData.data.webContentLink,
+        webViewLink: fileMetaData.data.webViewLink,
+        time: Date.now(),
       });
     }
 
     // * Getting File Id and Updating it
-    const data = await db.collection("user-data").doc(email).get();
+    const data = await db
+      .collection("user-data")
+      .doc(await req.email)
+      .get();
     for (const fileObject in data.data()) {
       // * Checking if the key is not text and if the value is empty
       if (data.data().hasOwnProperty(fileObject) && fileObject !== "text") {

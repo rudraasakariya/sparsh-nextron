@@ -72,9 +72,9 @@ io.on("connection", (socket) => {
     startApp();
   });
 
-  socket.on("fileUploaded", () => {
+  socket.on("fileUploaded", (data) => {
     // Broadcast to all connected clients
-    io.emit("fileUploaded");
+    io.emit("fileUploaded", data);
   });
   socket.on("fileDownloaded", (data) => {
     const downloadNotification = Notification({
@@ -110,7 +110,7 @@ async function startApp() {
     const port = process.argv[2];
     await mainWindow.loadURL(`http://localhost:${port}/home`);
     // Remove the top menu bar
-    mainWindow.removeMenu();
+    // mainWindow.removeMenu();
     // mainWindow.webContents.openDevTools();
   }
 }

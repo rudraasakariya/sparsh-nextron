@@ -3,13 +3,13 @@ import Upload from "../components/Upload";
 import Friends from "../components/Friends";
 import { useEffect, useState } from "react";
 import { modals } from "@mantine/modals";
+import axios from "axios";
 
 export function Home() {
   const [user, setUser] = useState({
-    name: "John Doe",
-    email: "adad@vard.com",
-    photoURL:
-      "https://lh3.googleusercontent.com/a/AGNmyxbQGWVuZg8O4Z7eIK4Czpo8JgYmAy6NN1plupox=s96-c",
+    name: "",
+    email: "",
+    photoURL: "",
   });
   useEffect(() => {
     let blob = document.getElementsByClassName("blob");
@@ -23,7 +23,7 @@ export function Home() {
       if (!blob) blob = document.getElementsByClassName("blob");
 
       if (blob) blob = blob[0];
-      
+
       blob?.animate(
         {
           left: `${clientX}px`,
@@ -37,7 +37,6 @@ export function Home() {
   }, []);
 
   useEffect(() => {
-    /*
     axios
       .get(`http://localhost:${process.env.NEXT_PUBLIC_PORT}/me`)
       .then((res) => {
@@ -47,7 +46,6 @@ export function Home() {
       .catch((err) => {
         console.log(err);
       });
-      */
   }, []);
 
   return (
@@ -71,13 +69,7 @@ export function Home() {
           className="inline-flex items-center p-2 mt-2 ml-3 text-sm text-gray-500 rounded-lg md:hidden hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-gray-200 dark:text-gray-400 dark:hover:bg-gray-700 dark:focus:ring-gray-600"
         >
           <span className="sr-only">Open sidebar</span>
-          <svg
-            className="w-6 h-6"
-            aria-hidden="true"
-            fill="currentColor"
-            viewBox="0 0 20 20"
-            xmlns="http://www.w3.org/2000/svg"
-          >
+          <svg className="w-6 h-6" aria-hidden="true" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
             <path
               clipRule="evenodd"
               fillRule="evenodd"
@@ -101,9 +93,7 @@ export function Home() {
                 className="h-6 mr-3 sm:h-7 rounded-full"
                 alt="User Avatar"
               />
-              <span className="self-center text-xl font-semibold whitespace-nowrap dark:text-white">
-                {user ? user.name : "John Doe"}
-              </span>
+              <span className="self-center text-xl font-semibold whitespace-nowrap dark:text-white">{user ? user.name : "John Doe"}</span>
             </a>
             <ul className="space-y-2 font-medium">
               <li>
@@ -139,10 +129,7 @@ export function Home() {
                 </a>
               </li>
               <li>
-                <a
-                  href="#"
-                  className="flex items-center p-2 text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700"
-                >
+                <a href="#" className="flex items-center p-2 text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700">
                   <svg
                     aria-hidden="true"
                     className="flex-shrink-0 w-6 h-6 text-gray-500 transition duration-75 dark:text-gray-400 group-hover:text-gray-900 dark:group-hover:text-white"
@@ -158,9 +145,7 @@ export function Home() {
                       d="M9.879 7.519c1.171-1.025 3.071-1.025 4.242 0 1.172 1.025 1.172 2.687 0 3.712-.203.179-.43.326-.67.442-.745.361-1.45.999-1.45 1.827v.75M21 12a9 9 0 11-18 0 9 9 0 0118 0zm-9 5.25h.008v.008H12v-.008z"
                     ></path>
                   </svg>
-                  <span className="flex-1 ml-3 whitespace-nowrap">
-                    Contact Us
-                  </span>
+                  <span className="flex-1 ml-3 whitespace-nowrap">Contact Us</span>
                 </a>
               </li>
             </ul>
@@ -185,9 +170,7 @@ export function Home() {
                 <p
                   className="font-normal text-gray-700 dark:text-gray-400"
                   onClick={() => {
-                    navigator.clipboard.writeText(
-                      "A text that I copied from the internet"
-                    );
+                    navigator.clipboard.writeText("A text that I copied from the internet");
                   }}
                 >
                   Receive Text
