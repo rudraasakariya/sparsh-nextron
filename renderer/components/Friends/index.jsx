@@ -63,7 +63,9 @@ export default function UsersRolesTable() {
     <div>
       <ScrollArea>
         <Table miw={100} verticalSpacing="sm">
-          <tbody>{rows}</tbody>
+          <tbody>{rows.length ? rows : (
+            "No friends yet"
+          )}</tbody>
         </Table>
       </ScrollArea>
 

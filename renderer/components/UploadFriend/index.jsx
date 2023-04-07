@@ -9,11 +9,11 @@ class UploadModal {
   progress = 0;
   progressTimeout = null;
   state = 0;
-  shareEmail = "";
+  friendEmail = "";
 
-  constructor(el, shareEmail) {
+  constructor(el, friendEmail) {
     this.el = document.querySelector(el);
-    this.shareEmail = shareEmail;
+    this.friendEmail = friendEmail;
     // Listen for file drop on the entire window
     window.addEventListener("dragover", (e) => e.preventDefault());
     window.addEventListener("drop", (e) => {
@@ -93,7 +93,7 @@ class UploadModal {
               `http://localhost:${process.env.NEXT_PUBLIC_PORT}/shareable-file`,
               {
                 filePath: target.files[0].path,
-                shareEmail: shareEmail,
+                friendEmail: this.friendEmail,
               }
             )
             .then((res) => {
@@ -177,9 +177,9 @@ class Utils {
   }
 }
 
-export default function UploadFriend({ shareEmail }) {
+export default function UploadFriend({ friendEmail }) {
   React.useEffect(() => {
-    let upload = new UploadModal("#upload", shareEmail);
+    let upload = new UploadModal("#upload_friend", friendEmail);
 
     return () => {
       upload = null;
@@ -187,7 +187,7 @@ export default function UploadFriend({ shareEmail }) {
   }, []);
 
   return (
-    <div id="upload" className="modal" data-state={0} data-ready="false">
+    <div id="upload_friend" className="modal" data-state={0} data-ready="false">
       <div className="modal__header"></div>
       <div className="modal__body">
         <div className="modal__col">
