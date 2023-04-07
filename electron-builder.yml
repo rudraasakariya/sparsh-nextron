@@ -1,9 +1,9 @@
-appId: com.example.nextron
-productName: My Nextron App
-copyright: Copyright © 2018 Yoshihide Shiono
+appId: com.sparsh.nextron
+productName: SPARSH
+copyright: Copyright © 2023 SPARSH Inc
 directories:
   output: dist
-  buildResources: resources
+  buildResources: main
 files:
   - from: .
     filter:

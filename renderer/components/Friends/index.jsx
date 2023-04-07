@@ -45,7 +45,7 @@ export default function UsersRolesTable() {
             });
           }}
         >
-          <Avatar size={40} src={item.photoURL} radius={40} />
+          <Avatar size={40} src={item.profileURL} radius={40} />
           <div>
             <Text fz="sm" fw={500}>
               {item.name}

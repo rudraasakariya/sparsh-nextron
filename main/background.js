@@ -80,7 +80,7 @@ io.on("connection", (socket) => {
     const downloadNotification = Notification({
       title: "File Synced",
       body: `${data} has been synced`,
-      icon: path.join(__dirname, "assets", "notification-icon.png"),
+      icon: path.join(__dirname, "resources", "icon.png"),
       silent: true,
       urgency: "normal",
     });
@@ -89,9 +89,9 @@ io.on("connection", (socket) => {
   });
   socket.on("fileSent", (data) => {
     const sendNotification = Notification({
-      title: "File Sent Successfuly",
+      title: "File Shared Successfuly",
       body: `${data.name} has been sent to ${data.email}`,
-      icon: path.join(__dirname, "assets", "notification-icon.png"),
+      icon: "../resources/icon.png",
       silent: true,
       urgency: "normal",
     });
