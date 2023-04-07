@@ -2737,6 +2737,19 @@
   dependencies:
     defer-to-connect "^1.0.1"
 
+"@tabler/icons-react@^2.14.0":
+  version "2.14.0"
+  resolved "https://registry.npmjs.org/@tabler/icons-react/-/icons-react-2.14.0.tgz"
+  integrity sha512-5lsXkV2T+ygKwrernJnnbkRtNdbBp8JANP17gdPHhhhVEUIuvaTWU+lDEwJFgyaChlepl5AwcFoMMhcnlPO6Hw==
+  dependencies:
+    "@tabler/icons" "2.14.0"
+    prop-types "^15.7.2"
+
+"@tabler/icons@2.14.0":
+  version "2.14.0"
+  resolved "https://registry.npmjs.org/@tabler/icons/-/icons-2.14.0.tgz"
+  integrity sha512-q4qFe8P0M0cwRlQajPtjucjVrRPVkv/aFHWrCm+HZH9eOkjYSyyFtn7/Zz7lkjBcGiPUkh08d/d3IvJToP/zvw==
+
 "@testing-library/dom@^8.5.0":
   version "8.20.0"
   resolved "https://registry.npmjs.org/@testing-library/dom/-/dom-8.20.0.tgz"
@@ -5436,6 +5449,13 @@ electron-builder@^23.6.0:
     simple-update-notifier "^1.0.7"
     yargs "^17.5.1"
 
+electron-clipboard-extended@^1.1.1:
+  version "1.1.1"
+  resolved "https://registry.npmjs.org/electron-clipboard-extended/-/electron-clipboard-extended-1.1.1.tgz"
+  integrity sha512-XA5ugkm+xA4FKVl5ebpRF8kGl9gZuKOCUf1gKZXOzrkDhUyfiRi2RWehBALA1jPlp4/JIjYpB49lhnzi0O9j8w==
+  dependencies:
+    events "^1.1.1"
+
 electron-osx-sign@^0.6.0:
   version "0.6.0"
   resolved "https://registry.npmjs.org/electron-osx-sign/-/electron-osx-sign-0.6.0.tgz"
@@ -6030,6 +6050,11 @@ eventemitter3@^4.0.0:
   version "4.0.7"
   resolved "https://registry.npmjs.org/eventemitter3/-/eventemitter3-4.0.7.tgz"
   integrity sha512-8guHBZCwKnFhYdHr2ysuRWErTwhoN2X8XELRlrRwpmfeY2jjuUN4taQMsULKUVo1K4DvZl+0pgfyoysHxvmvEw==
+
+events@^1.1.1:
+  version "1.1.1"
+  resolved "https://registry.npmjs.org/events/-/events-1.1.1.tgz"
+  integrity sha512-kEcvvCBByWXGnZy6JUlgAp2gBIUjfCAV6P6TgT1/aaQKcmuAEC4OZTV1I4EWQLz2gxZw76atuVyvHhTxvi0Flw==
 
 events@^3.2.0:
   version "3.3.0"
@@ -10009,7 +10034,7 @@ prompts@^2.0.1, prompts@^2.4.2:
     kleur "^3.0.3"
     sisteransi "^1.0.5"
 
-prop-types@^15.6.2, prop-types@^15.8.1:
+prop-types@^15.6.2, prop-types@^15.7.2, prop-types@^15.8.1:
   version "15.8.1"
   resolved "https://registry.npmjs.org/prop-types/-/prop-types-15.8.1.tgz"
   integrity sha512-oj87CgZICdulUohogVAR7AjlC0327U4el4L6eAvOqCeudMDVU0NThNaV+b9Df4dXgSP1gXMTnPdhfe/2qDH5cg==
@@ -10414,7 +10439,7 @@ react-transition-group@4.4.2:
     loose-envify "^1.4.0"
     prop-types "^15.6.2"
 
-react@*, "react@^15.0.0 || ^16.0.0 || ^17.0.0 || ^18.0.0", "react@^16 || ^17 || ^18", "react@^16.8 || ^17.0 || ^18.0", "react@^16.8.0 || ^17.0.0 || ^18.0.0", "react@^17.0.2 || ^18.0.0-0", react@^18, react@^18.0.0, react@^18.2.0, "react@>= 16", "react@>= 16.14", "react@>= 16.8 || 18.0.0", "react@>= 16.8.0 || 17.x.x || ^18.0.0-0", react@>=16.6.0, react@>=16.8.0, "react@0.14 || 15 || 16 || 17 || 18":
+react@*, "react@^15.0.0 || ^16.0.0 || ^17.0.0 || ^18.0.0", "react@^16 || ^17 || ^18", "react@^16.5.1 || ^17.0.0 || ^18.0.0", "react@^16.8 || ^17.0 || ^18.0", "react@^16.8.0 || ^17.0.0 || ^18.0.0", "react@^17.0.2 || ^18.0.0-0", react@^18, react@^18.0.0, react@^18.2.0, "react@>= 16", "react@>= 16.14", "react@>= 16.8 || 18.0.0", "react@>= 16.8.0 || 17.x.x || ^18.0.0-0", react@>=16.6.0, react@>=16.8.0, "react@0.14 || 15 || 16 || 17 || 18":
   version "18.2.0"
   resolved "https://registry.npmjs.org/react/-/react-18.2.0.tgz"
   integrity sha512-/3IjMdb2L9QbBdWiW5e3P2/npwMBaU9mHCSCUzNln0ZCYbcfTsGbTJrU/kGemdH2IWmB2ioZ+zkxtmq6g09fGQ==

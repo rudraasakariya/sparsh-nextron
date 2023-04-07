@@ -346,7 +346,7 @@ main {
 }
 
 .blob {
-  height: 34vmax;
+  height: 24vmax;
   aspect-ratio: 1;
   position: absolute;
   left: 50%;
@@ -366,6 +366,7 @@ main {
   height: 100%;
   left: 0;
   top: 0;
+  background-color: black;
 
   z-index: -1;
 }
@@ -406,6 +407,7 @@ main {
   background-image: linear-gradient(45deg, rgb(245,158,255), rgb(194,89,255));
   transition: all 0.5s;
 }
+
 
 .card::before {
   top: 0;

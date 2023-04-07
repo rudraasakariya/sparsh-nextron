@@ -4,10 +4,9 @@ import {
   Table,
   Group,
   Text,
-  Select,
   ScrollArea,
-  Button,
   Divider,
+  Skeleton,
 } from "@mantine/core";
 import { modals } from "@mantine/modals";
 
@@ -58,7 +57,7 @@ export default function UsersRolesTable() {
     <div>
       <ScrollArea>
         <Table miw={100} verticalSpacing="sm">
-          <tbody>{rows}</tbody>
+          <tbody>{data.length ? "No friends yet, please add someone to continue." : rows}</tbody>
         </Table>
       </ScrollArea>
 
