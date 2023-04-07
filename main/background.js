@@ -8,20 +8,23 @@ import { Server } from "socket.io";
 import cors from "cors";
 
 // * Importing Electron Modules
-import { app, globalShortcut, shell, ipcMain } from "electron";
+import { app, globalShortcut, shell, ipcMain, Notification } from "electron";
 import Store from "electron-store";
 import clipboardListener from "clipboard-event";
+import extendedClipboard from "electron-clipboard-extended";
 import serve from "electron-serve";
 import { createWindow } from "./helpers";
 
 // * Importing Backend Modules
-import * as SystemFileHandler from "../main/backend/fileHandler/systemFileHandler";
+import * as SystemFileHandler from "../main/backend/fileController/systemFileController";
+import * as SystemTextController from "../main/backend/textController/systemTextController";
 import routes from "./backend/routes/index.js";
-import oauth2Client from "./backend/googleAuth/OAuth2Client";
+import oauth2Client from "./backend/googleAuthController/OAuth2Client";
 
 import { initializeUser } from "./backend/middleware/CheckUser";
 
 const appexpress = express();
+appexpress.use(express.json());
 // * Configuring CORS (so annoying fr)
 appexpress.use(
   cors({
@@ -51,6 +54,7 @@ server.listen(process.env.PORT || 5000, () => {
 });
 
 initializeUser();
+SystemTextController.initializeSocket();
 
 // * Listening for the connection event
 io.on("connection", (socket) => {
@@ -68,9 +72,20 @@ io.on("connection", (socket) => {
     startApp();
   });
 
-  socket.on("fileUploaded", () => {
+  socket.on("fileUploaded", (data) => {
     // Broadcast to all connected clients
-    io.emit("fileUploaded");
+    io.emit("fileUploaded", data);
+  });
+  socket.on("fileDownloaded", (data) => {
+    const downloadNotification = Notification({
+      title: "File Synced",
+      body: `${data} has been synced`,
+      icon: path.join(__dirname, "assets", "notification-icon.png"),
+      silent: true,
+      urgency: "normal",
+    });
+    // * Showing the download notification
+    downloadNotification.show();
   });
 });
 
@@ -95,7 +110,7 @@ async function startApp() {
     const port = process.argv[2];
     await mainWindow.loadURL(`http://localhost:${port}/home`);
     // Remove the top menu bar
-    mainWindow.removeMenu();
+    // mainWindow.removeMenu();
     // mainWindow.webContents.openDevTools();
   }
 }
@@ -112,6 +127,8 @@ async function startAuth() {
 
   // * Start listening for Clipboard changes
   clipboardListener.startListening();
+  // * Start watching for Clipboard Text changes
+  extendedClipboard.startWatching();
 
   // * Registering global shortcuts
   globalShortcut.register("CommandOrControl+U", () => {
@@ -126,8 +143,14 @@ async function startAuth() {
   });
 
   globalShortcut.register("CommandOrControl+D", SystemFileHandler.downloadFile);
-})();
+  globalShortcut.register("CommandOrControl+T", SystemTextController.getText);
 
+  // * Detects changes when a text is copied
+  extendedClipboard.on("text-changed", () => {
+    const clipboardText = extendedClipboard.readText();
+    SystemTextController.updateText(clipboardText);
+  });
+})();
 
 // * Opens the link in the default browser and downloads the file for user
 ipcMain.on("downloadLink", (event, args) => {

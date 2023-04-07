@@ -1,12 +1,20 @@
 import { google } from "googleapis";
-import oauth2Client from "../googleAuth/OAuth2Client.js";
+import oauth2Client from "../googleAuthController/OAuth2Client.js";
 import db from "../firebase/firebase.js";
+import mime from "mime-types";
+import fs from "node:fs";
+
+import { io } from "socket.io-client";
+const socketMain = io(`http://localhost:${process.env.PORT}`);
 
 // * Getting Files from Google Drive and Sending to the Frontend
 export async function getFiles(req, res) {
   const drive = google.drive({ version: "v3", auth: oauth2Client });
   // * Fetching ID from Database
-  const file_ID = await db.collection("user-data").doc(req.email).get();
+  const file_ID = await db
+    .collection("user-data")
+    .doc(await req.email)
+    .get();
 
   const files = [];
 
@@ -46,7 +54,7 @@ export async function getFiles(req, res) {
 export async function uploadFile(req, res) {
   const drive = google.drive({ version: "v3", auth: oauth2Client });
   // TODO: Change the regex according to the OS
-  const filePath = req.data.filePath;
+  const filePath = req.body.filePath;
   // * String Manipulation to get the File Name and File Type
   const fileName = filePath.split("\\").pop();
   const fileType = fileName.split(".").pop();
@@ -62,16 +70,26 @@ export async function uploadFile(req, res) {
   };
 
   try {
+    // * Uploading File to Google Drive
     async function driveUpload(key) {
       // * Creating File in Google Drive
       const file = await drive.files.create({
         requestBody,
         media: media,
       });
+
+      const fileMetaData = await drive.files.get(
+        {
+          fileId: await file.data.id,
+          fields: "*",
+        },
+        { responseType: "json" }
+      );
+
       // * Updating the File Id in the Database
       await db
         .collection("user-data")
-        .doc(email)
+        .doc(await req.email)
         .update({
           [key]: {
             id: await file.data.id,
@@ -81,55 +99,56 @@ export async function uploadFile(req, res) {
 
       // * Broadcast to all sockets
       socketMain.emit("fileUploaded", {
-        ...file.data,
+        id: fileMetaData.data.id,
+        name: fileMetaData.data.name,
+        webContentLink: fileMetaData.data.webContentLink,
+        webViewLink: fileMetaData.data.webViewLink,
+        time: Date.now(),
       });
     }
 
     // * Getting File Id and Updating it
-    const data = await db.collection("user-data").doc(email).get();
-    for (const fileObject in data.data()) {
-      // * Checking if the key is not text and if the value is empty
-      if (data.data().hasOwnProperty(fileObject) && fileObject !== "text") {
-        // * Getting the value of the key
-        const element = data.data()[fileObject];
-        if (element.id === "" && element.time === "") {
-          // * Uploading File to Google Drive
-          await driveUpload(fileObject);
-          console.log("Uploading File to Google Drive as the File Id is Empty");
-          break;
-        } else if (element.id !== "" && element.time !== "") {
-          let minTimeFile = null;
-          let minTime = Number.MAX_SAFE_INTEGER;
+    const data = await db
+      .collection("user-data")
+      .doc(await req.email)
+      .get();
+    // * Checking if the User Exists in the Database
+    if (data.exists) {
+      for (const fileObject in data.data()) {
+        // * Checking if the key is not text and if the value is empty
+        if (fileObject !== "text") {
+          // * Getting the value of the key
+          const element = data.data()[fileObject];
+          if (element.id === "" && element.time === "") {
+            // * Uploading File to Google Drive
+            await driveUpload(fileObject);
+            console.log("Uploading File to Google Drive as the File Id is Empty");
+            break;
+          } else if (element.id !== "" && element.time !== "") {
+            let minTimeFile = null;
+            let minTime = Number.MAX_SAFE_INTEGER;
 
-          // * Getting the File with the Minimum Time
-          for (const key in data.data()) {
-            if (data.data()[key].time && data.data()[key].time < minTime) {
-              minTime = data.data()[key].time;
-              minTimeFile = key;
+            // * Getting the File with the Minimum Time
+            for (const key in data.data()) {
+              if (data.data()[key].time && data.data()[key].time < minTime) {
+                minTime = data.data()[key].time;
+                minTimeFile = key;
+              }
             }
+
+            // * Deleting the Old File from Google Drive
+            await drive.files.delete({
+              fileId: data.data()[minTimeFile].id,
+            });
+            // * Updating the Old File to New File
+            await driveUpload(minTimeFile);
+
+            break;
           }
-
-          // * Deleting the Old File from Google Drive
-          await drive.files.delete({
-            fileId: data.data()[minTimeFile].id,
-          });
-          // * Updating the Old File to New File
-          await driveUpload(minTimeFile);
-
-          break;
         }
       }
-
-      // * This is for the Text File
-      // * Checking if the Key is Text
-      //   if (key === "text") {
-      //     console.log("Uploading Text to Google Drive as the File Id is Empty");
-      //     await db.collection("user-data").doc(email).update({
-      // TODO: Change this to the Text from the File
-      // [key]: await file.data.id,Z
-      //     });
-      //     break;
-      //   }
+    } else {
+      res.send("User Does Not Exist");
     }
     console.log("Uploaded Successfully!");
   } catch (error) {

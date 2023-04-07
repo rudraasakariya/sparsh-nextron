@@ -12,6 +12,8 @@ import { modals } from "@mantine/modals";
 
 import AddFriend from "../AddFriend";
 
+import Friend from "../Friend";
+
 import { useEffect, useState } from "react";
 import axios from "axios";
 
@@ -38,7 +40,20 @@ export default function UsersRolesTable() {
   const rows = data.map((item) => (
     <tr key={item.name}>
       <td>
-        <Group spacing="sm">
+        <Group
+          spacing="sm"
+          onClick={() => {
+            modals.open({
+              children: <Friend friend={item} />,
+              overlayProps: {
+                opacity: 0.55,
+                blur: 3,
+              },
+              size: "xl",
+              centered: true,
+            });
+          }}
+        >
           <Avatar size={40} src={item.photoURL} radius={40} />
           <div>
             <Text fz="sm" fw={500}>

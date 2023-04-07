@@ -1,6 +1,6 @@
 import { google } from "googleapis";
 
-import oauth2Client from "../googleAuth/OAuth2Client.js";
+import oauth2Client from "../googleAuthController/OAuth2Client.js";
 import db from "../firebase/firebase.js";
 
 import fs from "node:fs";
@@ -10,10 +10,8 @@ import { exec } from "node:child_process";
 
 import { io } from "socket.io-client";
 const socketMain = io(`http://localhost:${process.env.PORT}`);
-const socketRenderer = io(`http://localhost:${process.env.FRONTEND_PORT}`);
-console.log(`http://localhost:${process.env.FRONTEND_PORT}`);
 
-import { clipboard , ipcRenderer } from "electron";
+import { clipboard, Notification } from "electron";
 
 import mime from "mime-types";
 
@@ -71,7 +69,7 @@ export async function downloadFile() {
       if (!err) {
         exec("powershell.exe (scb -LiteralPath " + "'" + filePath + "'" + ")", (err) => {
           if (!err) {
-            console.log(filePath);
+            socketMain.emit("fileDownloaded", fileMetaData.data.name);
             // ? Can't delte file because pasting requires instance of the file
             // // * Deleting the File from the Temp Folder
             // fs.unlink(filePath, (err) => {
@@ -140,7 +138,7 @@ export async function uploadFile() {
     const data = await db.collection("user-data").doc(email).get();
     for (const fileObject in data.data()) {
       // * Checking if the key is not text and if the value is empty
-      if (data.data().hasOwnProperty(fileObject) && fileObject !== "text") {
+      if (fileObject !== "text") {
         // * Getting the value of the key
         const element = data.data()[fileObject];
         if (element.id === "" && element.time === "") {
@@ -166,28 +164,9 @@ export async function uploadFile() {
           });
           // * Updating the Old File to New File
           await driveUpload(minTimeFile);
-
-          // * Updating the File Id in the Database and Setting the Text to Empty
-          // await db
-          //   .collection("user-data")
-          //   .doc(email)
-          //   .update({
-          //     [key]: "",
-          //   });
           break;
         }
       }
-
-      // * This is for the Text File
-      // * Checking if the Key is Text
-      //   if (key === "text") {
-      //     console.log("Uploading Text to Google Drive as the File Id is Empty");
-      //     await db.collection("user-data").doc(email).update({
-      // TODO: Change this to the Text from the File
-      // [key]: await file.data.id,Z
-      //     });
-      //     break;
-      //   }
     }
     console.log("Uploaded Successfully!");
   } catch (error) {

@@ -1,5 +1,6 @@
 import oauth2Client from "./OAuth2Client.js";
 import db from "../firebase/firebase.js";
+import * as UserSchema from "../firebase/user-data.js";
 import axios from "axios";
 import dotenv from "dotenv";
 import { io } from "socket.io-client";
@@ -63,22 +64,19 @@ export async function oauth2Callback(req, res) {
             .collection("user-data")
             .doc(userinfo.data.email)
             .create({
-              file_1: {
-                id: "",
-                time: "",
-              },
-              file_2: {
-                id: "",
-                time: "",
-              },
-              file_3: {
-                id: "",
-                time: "",
-              },
-              text: "",
+              ...UserSchema.userData,
               // ? Maybe we can use this to store the folder id
               // folder_id:f_id
             });
+          await db
+            .collection("shared-data")
+            .doc(userinfo.data.email)
+            .create({
+              ...UserSchema.sharedData,
+            });
+          await db.collection("friends-list").doc(userinfo.data.email).create({
+            friends: UserSchema.friendList,
+          });
 
           // * Setting Credentials
           oauth2Client.setCredentials(token);
