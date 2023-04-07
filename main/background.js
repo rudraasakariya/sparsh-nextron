@@ -16,10 +16,10 @@ import serve from "electron-serve";
 import { createWindow } from "./helpers";
 
 // * Importing Backend Modules
-import * as SystemFileHandler from "../main/backend/fileHandler/systemFileHandler";
+import * as SystemFileHandler from "../main/backend/fileController/systemFileController";
 import * as SystemTextController from "../main/backend/textController/systemTextController";
 import routes from "./backend/routes/index.js";
-import oauth2Client from "./backend/googleAuth/OAuth2Client";
+import oauth2Client from "./backend/googleAuthController/OAuth2Client";
 
 import { initializeUser } from "./backend/middleware/CheckUser";
 

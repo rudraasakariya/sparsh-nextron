@@ -35,7 +35,7 @@ export const sharedData = {
       webContenLink: "",
       webViewLink: "",
       time: "",
-      from: "",
+      to: "",
     },
     {
       id: "",
@@ -43,7 +43,7 @@ export const sharedData = {
       webContenLink: "",
       webViewLink: "",
       time: "",
-      from: "",
+      to: "",
     },
     {
       id: "",
@@ -51,7 +51,7 @@ export const sharedData = {
       webContenLink: "",
       webViewLink: "",
       time: "",
-      from: "",
+      to: "",
     },
   ],
   receive: [
@@ -61,7 +61,7 @@ export const sharedData = {
       webContenLink: "",
       webViewLink: "",
       time: "",
-      to: "",
+      from: "",
     },
     {
       id: "",
@@ -69,7 +69,7 @@ export const sharedData = {
       webContenLink: "",
       webViewLink: "",
       time: "",
-      to: "",
+      from: "",
     },
     {
       id: "",
@@ -77,7 +77,7 @@ export const sharedData = {
       webContenLink: "",
       webViewLink: "",
       time: "",
-      to: "",
+      from: "",
     },
   ],
 };

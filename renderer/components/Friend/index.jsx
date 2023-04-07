@@ -1,6 +1,6 @@
 import Card from "../CardFriend";
-import Upload from "../CardFriend";
 import { Avatar, Text, Paper } from "@mantine/core";
+import UploadFriend from "../UploadFriend";
 
 export default function Friend({ friend }) {
   return (
@@ -54,7 +54,7 @@ export default function Friend({ friend }) {
         <div className="p-4 border-2 border-gray-200 border-dashed rounded-lg dark:border-gray-700">
           <Card />
           <div className="flex items-center justify-center h-65 mb-4 rounded">
-            <Upload shareEmail={friend.email} />
+            <UploadFriend shareEmail={friend.email} />
           </div>
         </div>
       </div>

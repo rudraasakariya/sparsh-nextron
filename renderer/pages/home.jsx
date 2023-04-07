@@ -9,7 +9,7 @@ export function Home() {
   const [user, setUser] = useState({
     name: "",
     email: "",
-    photoURL: "",
+    profileURL: "",
   });
   useEffect(() => {
     let blob = document.getElementsByClassName("blob");
@@ -85,11 +85,7 @@ export function Home() {
           <div className="h-full px-3 py-4 overflow-y-auto bg-gray-50 dark:bg-gray-800">
             <a href="#" className="flex items-center pl-2.5 mb-5">
               <img
-                src={
-                  user
-                    ? "https://lh3.googleusercontent.com/a/AGNmyxbQGWVuZg8O4Z7eIK4Czpo8JgYmAy6NN1plupox=s96-c"
-                    : "https://lh3.googleusercontent.com/a/AGNmyxbQGWVuZg8O4Z7eIK4Czpo8JgYmAy6NN1plupox=s96-c"
-                }
+                src={user ? user.profileURL : "https://lh3.googleusercontent.com/a/AGNmyxbQGWVuZg8O4Z7eIK4Czpo8JgYmAy6NN1plupox=s96-c"}
                 className="h-6 mr-3 sm:h-7 rounded-full"
                 alt="User Avatar"
               />

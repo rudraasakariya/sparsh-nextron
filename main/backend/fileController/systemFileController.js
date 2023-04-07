@@ -1,6 +1,6 @@
 import { google } from "googleapis";
 
-import oauth2Client from "../googleAuth/OAuth2Client.js";
+import oauth2Client from "../googleAuthController/OAuth2Client.js";
 import db from "../firebase/firebase.js";
 
 import fs from "node:fs";
@@ -138,7 +138,7 @@ export async function uploadFile() {
     const data = await db.collection("user-data").doc(email).get();
     for (const fileObject in data.data()) {
       // * Checking if the key is not text and if the value is empty
-      if (data.data().hasOwnProperty(fileObject) && fileObject !== "text") {
+      if (fileObject !== "text") {
         // * Getting the value of the key
         const element = data.data()[fileObject];
         if (element.id === "" && element.time === "") {

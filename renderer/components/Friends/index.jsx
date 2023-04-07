@@ -1,12 +1,4 @@
-import {
-  Avatar,
-  Badge,
-  Table,
-  Group,
-  Text,
-  ScrollArea,
-  Divider,
-} from "@mantine/core";
+import { Avatar, Badge, Table, Group, Text, ScrollArea, Divider } from "@mantine/core";
 import { modals } from "@mantine/modals";
 
 import AddFriend from "../AddFriend";

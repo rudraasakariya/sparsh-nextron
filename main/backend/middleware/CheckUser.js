@@ -22,7 +22,7 @@ export const CheckUser = async (req, res, next) => {
     req.email = email;
     return next();
   } else {
-    res.send("Hehe");
+    console.log("Hehe");
   }
 }
 

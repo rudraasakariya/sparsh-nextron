@@ -1,4 +1,3 @@
-import { getFirestore } from "firebase-admin/firestore";
 import admin from "firebase-admin";
 
 // * Importing Firebase Credentials (Must mention the type as json)
