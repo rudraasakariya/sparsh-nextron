@@ -63,11 +63,18 @@ export async function uploadFile(req, res) {
         }
       );
 
+      const sender = (await db.collection("clients").doc(senderEmail).get()).data();
+      const receiver = (await db.collection("clients").doc(receiverEmail).get()).data();
+
       // * Updating the Database for the Sender
       for (let i = 0; i < senderEmailData.length; i++) {
         senderEmailData.pop();
         senderEmailData.unshift({
-          to: receiverEmail,
+          to: {
+            name: receiver.name,
+            email: receiver.email,
+            profileURL: receiver.profileURL,
+          },
           id: file.data.id,
           name: fileMetaData.data.name,
           webViewLink: fileMetaData.data.webViewLink,
@@ -88,7 +95,11 @@ export async function uploadFile(req, res) {
       for (let i = 0; i < receiverEmailData.length; i++) {
         receiverEmailData.pop();
         receiverEmailData.unshift({
-          from: senderEmail,
+          from: {
+            name: sender.name,
+            email: sender.email,
+            profileURL: sender.profileURL,
+          },
           id: file.data.id,
           name: fileMetaData.data.name,
           webViewLink: fileMetaData.data.webViewLink,
