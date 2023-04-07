@@ -1,19 +1,17 @@
 import { google } from "googleapis";
-
 import db from "../firebase/firebase.js";
-
 import oauth2Client from "../googleAuthController/OAuth2Client.js";
-
 import fs from "fs";
-
 import mime from "mime-types";
+import { io } from "socket.io-client";
+const socketMain = io(`http://localhost:${process.env.PORT}`);
 
 export async function uploadFile(req, res) {
-  const receiverEmail = await req.body.email;
+  const receiverEmail = await req.body.friendEmail;
   const senderEmail = await req.email;
   const drive = google.drive({ version: "v3", auth: oauth2Client });
   // TODO: Change the regex according to the OS
-  const filePath = req.body.filePath;
+  const filePath = await req.body.filePath;
   // * String Manipulation to get the File Name and File Type
   const fileName = filePath.split("\\").pop();
   const fileType = fileName.split(".").pop();
@@ -86,8 +84,6 @@ export async function uploadFile(req, res) {
           send: [...senderEmailData],
         });
 
-      console.log("Sender", ...senderEmailData);
-
       // * Updating the Databse for the Receiver
       for (let i = 0; i < receiverEmailData.length; i++) {
         receiverEmailData.pop();
@@ -110,10 +106,11 @@ export async function uploadFile(req, res) {
           receive: [...receiverEmailData],
         });
 
-      console.log("Receiver", ...receiverEmailData);
-
       // * Broadcast to all sockets
-      // socketMain.emit("fileSent", receiverEmail);
+      socketMain.emit("fileSent", {
+        email: receiverEmail,
+        name: fileMetaData.data.name,
+      });
     }
 
     // * Getting File Id and Updating it
@@ -122,8 +119,14 @@ export async function uploadFile(req, res) {
 
     //  * Uploading the file to the sender's drive and updating the file id in both Sender and Receiver's Database
     await driveUpload();
-    res.send("File Uploaded Successfully");
+    res.status(200).send({ message: "File Shared Successfully" });
   } catch (error) {
     throw Error(error);
   }
+}
+
+export async function getFiles(req, res) {
+  const email = req.email;
+  const sharedData = (await db.collection("shared-data").doc(email).get()).data();
+  res.status(200).send({ sent: sharedData.send, received: sharedData.receive });
 }

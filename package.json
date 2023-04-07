@@ -3,7 +3,7 @@
   "name": "sparsh",
   "description": "My application description",
   "version": "1.0.0",
-  "author": "Yoshihide Shiono <shiono.yoshihide@gmail.com>",
+  "author": "Rudraraj Sakariya <rudrasakariya16@gmail.com>",
   "main": "app/background.js",
   "proxy": "http://localhost:8080",
   "scripts": {

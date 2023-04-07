@@ -17,7 +17,7 @@ import { createWindow } from "./helpers";
 
 // * Importing Backend Modules
 import * as SystemFileHandler from "../main/backend/fileController/systemFileController";
-import * as SystemTextController from "../main/backend/textController/systemTextController";
+import * as SystemTextController from "./backend/appTextController/systemTextController";
 import routes from "./backend/routes/index.js";
 import oauth2Client from "./backend/googleAuthController/OAuth2Client";
 
@@ -87,6 +87,17 @@ io.on("connection", (socket) => {
     // * Showing the download notification
     downloadNotification.show();
   });
+  socket.on("fileSent", (data) => {
+    const sendNotification = Notification({
+      title: "File Sent Successfuly",
+      body: `${data.name} has been sent to ${data.email}`,
+      icon: path.join(__dirname, "assets", "notification-icon.png"),
+      silent: true,
+      urgency: "normal",
+    });
+    // * Showing the send notification
+    sendNotification.show();
+  });
 });
 
 // * Configuring Electron Window
@@ -110,7 +121,7 @@ async function startApp() {
     const port = process.argv[2];
     await mainWindow.loadURL(`http://localhost:${port}/home`);
     // Remove the top menu bar
-    // mainWindow.removeMenu();
+    mainWindow.removeMenu();
     // mainWindow.webContents.openDevTools();
   }
 }

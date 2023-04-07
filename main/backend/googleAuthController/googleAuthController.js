@@ -94,7 +94,7 @@ export async function oauth2Callback(req, res) {
 
           res.send(`<script>alert("Close the window you're logged in");</script>`);
         }
-      } // TODO: Uncomment this if you want to run the `IF USER EXISTS` code
+      }
     });
   } catch (error) {
     res.status(400).send(error);
