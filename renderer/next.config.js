@@ -6,4 +6,8 @@ module.exports = {
 
     return config;
   },
+  //* whitelist google images (https://lh3.googleusercontent.com/a/AGNmyxY0nVY91BUJ8UDsasjMhHoRO02iDBewkujkNFoK=s96-c)
+  images: {
+    domains: ["lh3.googleusercontent.com"],
+  },
 };

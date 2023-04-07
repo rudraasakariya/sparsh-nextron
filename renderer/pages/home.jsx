@@ -44,7 +44,7 @@ export function Home() {
   // * Fetch user data
   useEffect(() => {
     axios
-      .get(`http://localhost:${process.env.NEXT_PUBLIC_PORT}/me`)
+      .get(`/me`)
       .then((res) => {
         const user = res.data;
         setUser(user);

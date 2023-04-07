@@ -121,7 +121,7 @@ async function startApp() {
     const port = process.argv[2];
     await mainWindow.loadURL(`http://localhost:${port}/home`);
     // Remove the top menu bar
-    mainWindow.removeMenu();
+    // mainWindow.removeMenu();
     // mainWindow.webContents.openDevTools();
   }
 }

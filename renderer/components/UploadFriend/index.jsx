@@ -90,7 +90,7 @@ class UploadModal {
           // @Rudra: This is where you can get the file data target.files[0] is the file object.
           axios
             .post(
-              `http://localhost:${process.env.NEXT_PUBLIC_PORT}/shareable-file`,
+              `/shareable-file`,
               {
                 filePath: target.files[0].path,
                 friendEmail: this.friendEmail,

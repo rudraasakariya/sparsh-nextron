@@ -138,6 +138,31 @@ export async function uploadFile(req, res) {
 
 export async function getFiles(req, res) {
   const email = req.email;
-  const sharedData = (await db.collection("shared-data").doc(email).get()).data();
-  res.status(200).send({ sent: sharedData.send, received: sharedData.receive });
+  const sharedData = (
+    await db.collection("shared-data").doc(email).get()
+  ).data();
+  const data = {
+    sent: sharedData.send,
+    received: sharedData.receive,
+  };
+
+  const dataToReturn = {
+    sent: [],
+    received: [],
+  };
+
+  // * Removing all empty json objects from the data.
+  for (let i = 0; i < data.sent.length; i++) {
+    if (Object.values(data.sent[i]).every((x) => x !== "")) {
+      dataToReturn.sent.push(data.sent[i]);
+    }
+  }
+
+  for (let i = 0; i < data.received.length; i++) {
+    if (Object.values(data.received[i]).every((x) => x !== "")) {
+      dataToReturn.received.push(data.received[i]);
+    }
+  }
+
+  res.status(200).send(dataToReturn);
 }

@@ -14,7 +14,7 @@ export default function UsersRolesTable() {
   useEffect(() => {
     // Fetch data from API
     axios
-      .get(`http://localhost:${process.env.NEXT_PUBLIC_PORT}/get-friends`)
+      .get(`/get-friends`)
       .then((res) => {
         const friends = res.data;
         setData(friends);

@@ -3,18 +3,12 @@ import {
   Text,
   Paper,
   Container,
-  Grid,
-  SimpleGrid,
-  Skeleton,
   useMantineTheme,
   rem,
 } from "@mantine/core";
 const PRIMARY_COL_HEIGHT = rem(300);
 
 import UploadFriend from "../UploadFriend";
-
-
-
 
 export default function Friend({ friend }) {
   const theme = useMantineTheme();

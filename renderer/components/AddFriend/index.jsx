@@ -21,7 +21,7 @@ export default function AddFriend() {
     <Box maw={300} mx="auto">
       <form onSubmit={form.onSubmit((values) => {
         axios
-          .post(`http://localhost:${process.env.NEXT_PUBLIC_PORT}/add-friend`, {
+          .post(`/add-friend`, {
             friendEmail: values.email,
           })
           .then((res) => {

@@ -87,7 +87,7 @@ class UploadModal {
         reader.onload = (e2) => {
           // @Rudra: This is where you can get the file data target.files[0] is the file object.
           axios
-            .post(`http://localhost:${process.env.NEXT_PUBLIC_PORT}/drop-upload`, {
+            .post(`/drop-upload`, {
               filePath: target.files[0].path,
             })
             .then((res) => {
