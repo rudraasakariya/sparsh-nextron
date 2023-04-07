@@ -46,7 +46,7 @@ export async function uploadFile(req, res) {
       );
 
       // * Creating shareable link for the file and saving it to the database
-      drive.permissions.create(
+      const permission = await drive.permissions.create(
         {
           fileId: file.data.id, // * Replace with the ID of the file you just uploaded
           requestBody: {
@@ -60,71 +60,69 @@ export async function uploadFile(req, res) {
             // Handle error
             console.error(err);
           } else {
-            console.log("Permission ID:", permission.data.id);
+            console.log("Permission ID: ", permission.data.id);
           }
         }
       );
 
       // * Updating the Database for the Sender
-      const updatedSenderEmailData = senderEmailData.map((obj) =>
-        obj.id === senderObject.id
-          ? {
-              to: receiverEmail,
-              id: file.data.id,
-              name: fileMetaData.data.name,
-              webViewLink: fileMetaData.data.webViewLink,
-              webContentLink: fileMetaData.data.webContentLink,
-              time: Date.now(),
-            }
-          : obj
-      );
+      for (let i = 0; i < senderEmailData.length; i++) {
+        senderEmailData.pop();
+        senderEmailData.unshift({
+          to: receiverEmail,
+          id: file.data.id,
+          name: fileMetaData.data.name,
+          webViewLink: fileMetaData.data.webViewLink,
+          webContentLink: fileMetaData.data.webContentLink,
+          time: Date.now(),
+          // permission: permission,
+        });
+        break;
+      }
       await db
         .collection("shared-data")
         .doc(senderEmail)
         .update({
-          send: [...updatedSenderEmailData],
+          send: [...senderEmailData],
         });
 
+      console.log("Sender", ...senderEmailData);
+
+      // * Updating the Databse for the Receiver
+      for (let i = 0; i < receiverEmailData.length; i++) {
+        receiverEmailData.pop();
+        receiverEmailData.unshift({
+          from: senderEmail,
+          id: file.data.id,
+          name: fileMetaData.data.name,
+          webViewLink: fileMetaData.data.webViewLink,
+          webContentLink: fileMetaData.data.webContentLink,
+          time: Date.now(),
+          // permission: permission.data.id,
+        });
+        break;
+      }
+
+      await db
+        .collection("shared-data")
+        .doc(receiverEmail)
+        .update({
+          receive: [...receiverEmailData],
+        });
+
+      console.log("Receiver", ...receiverEmailData);
+
       // * Broadcast to all sockets
-      socketMain.emit("fileSent", receiverEmail);
+      // socketMain.emit("fileSent", receiverEmail);
     }
 
     // * Getting File Id and Updating it
     const senderEmailData = (await db.collection("shared-data").doc(senderEmail).get()).data().send;
     const receiverEmailData = (await db.collection("shared-data").doc(receiverEmail).get()).data().receive;
 
-    // * Updating the File Id in the Database for the sender
-    for (const senderObject of senderEmailData) {
-      if (senderObject.id === "") {
-        driveUpload(senderObject);
-      } else if (senderObject.id !== "") {
-        // * Deleting the file from the sender's drive
-        await drive.files.delete({
-          fileId: senderObject.id,
-        });
-
-        // * Uploading the file to the sender's drive and updating the file id
-        driveUpload(senderObject);
-      }
-    }
-
-    // // * Updating the File Id in the Database for the receiver
-    // for (const receiverObject of receiverEmailData) {
-    //   if (receiverObject.id === "") {
-    //     receiverEmailData.push({
-
-    //     })
-    //     await db
-    //       .collection("shared-data")
-    //       .doc(receiverEmail)
-    //       .update({
-    //         receive: [{}],
-    //       });
-    //   } else if (receiverObject.id !== "") {
-    //     // * Uploading the file to the sender's drive and updating the file id
-    //     driveUpload(receiverObject);
-    //   }
-    // }
+    //  * Uploading the file to the sender's drive and updating the file id in both Sender and Receiver's Database
+    await driveUpload();
+    res.send("File Uploaded Successfully");
   } catch (error) {
     throw Error(error);
   }

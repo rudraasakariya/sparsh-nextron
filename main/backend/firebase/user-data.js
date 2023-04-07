@@ -36,6 +36,7 @@ export const sharedData = {
       webViewLink: "",
       time: "",
       to: "",
+      permission: "",
     },
     {
       id: "",
@@ -44,6 +45,7 @@ export const sharedData = {
       webViewLink: "",
       time: "",
       to: "",
+      permission: "",
     },
     {
       id: "",
@@ -52,6 +54,7 @@ export const sharedData = {
       webViewLink: "",
       time: "",
       to: "",
+      permission: "",
     },
   ],
   receive: [
@@ -62,6 +65,7 @@ export const sharedData = {
       webViewLink: "",
       time: "",
       from: "",
+      permission: "",
     },
     {
       id: "",
@@ -70,6 +74,7 @@ export const sharedData = {
       webViewLink: "",
       time: "",
       from: "",
+      permission: "",
     },
     {
       id: "",
@@ -78,6 +83,7 @@ export const sharedData = {
       webViewLink: "",
       time: "",
       from: "",
+      permission: "",
     },
   ],
 };
