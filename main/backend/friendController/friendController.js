@@ -2,18 +2,29 @@ import db from "../firebase/firebase";
 
 // * Adding Friend to the Friend List
 export async function addFriend(req, res) {
-  const doc = await db.collection("friends-list").doc(req.email).get();
-  console.log(doc);
-  const friends = doc.data().friends;
+  const doc = (await db.collection("friends-list").doc(req.email).get()).data().friends;
+  const friendDoc = (await db.collection("friends-list").doc(req.body.friendEmail).get()).data().friends;
+
+  const data = await db.collection("clients").doc(req.email).get();
   const friendData = await db.collection("clients").doc(req.body.friendEmail).get();
-  if (friendData.exists) {
-    friends.push({
+  if (data.exists && friendData.exists) {
+    doc.push({
       email: friendData.data().email,
       name: friendData.data().name,
-      photoURL: friendData.data().profileURL,
+      profileURL: friendData.data().profileURL,
     });
-    await db.collection("friends-list").doc(req.email).update({ friends: friends });
-    res.status(200).send("Friend Added Successfully");
+
+    friendDoc.push({
+      email: data.data().email,
+      name: data.data().name,
+      profileURL: data.data().profileURL,
+    });
+    await db.collection("friends-list").doc(req.email).update({ friends: doc });
+    await db.collection("friends-list").doc(req.body.friendEmail).update({ friends: friendDoc });
+    res.status(200).send({
+      message: "Friend Added Successfully",
+      friends: doc,
+    });
   } else {
     res.status(404).send("Ask your frined to join this app");
   }

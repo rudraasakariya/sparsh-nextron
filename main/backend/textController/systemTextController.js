@@ -10,6 +10,7 @@ let email = null;
 export function initializeSocket() {
   socketInstance.on("token", (token) => {
     email = token;
+    console.log(email);
   });
 
   return null;

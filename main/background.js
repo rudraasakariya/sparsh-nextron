@@ -68,7 +68,7 @@ io.on("connection", (socket) => {
   socket.on("authenticated", (userToken) => {
     store.set("user-token", userToken);
     oauth2Client.setCredentials(userToken);
-    socket.emit("token", userToken.email);
+    io.emit("token", userToken.email);
     startApp();
   });
 

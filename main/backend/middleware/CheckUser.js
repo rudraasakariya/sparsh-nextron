@@ -1,6 +1,5 @@
 // * Importing and Initializing Socket.io
 import { io } from "socket.io-client";
-const socketInstance = io(`http://localhost:${process.env.PORT}`);
 
 // * Importing Backend Modules
 import db from "../firebase/firebase";
@@ -9,11 +8,11 @@ import db from "../firebase/firebase";
 let email = null;
 
 export function initializeUser() {
+const socketInstance = io(`http://localhost:${process.env.PORT}`);
+
   socketInstance.on("token", (token) => {
     email = token;
   });
-
-  return null;
 }
 
 export const CheckUser = async (req, res, next) => {

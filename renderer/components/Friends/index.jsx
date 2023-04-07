@@ -1,13 +1,4 @@
-import {
-  Avatar,
-  Badge,
-  Table,
-  Group,
-  Text,
-  ScrollArea,
-  Divider,
-  Skeleton,
-} from "@mantine/core";
+import { Avatar, Badge, Table, Group, Text, ScrollArea, Divider, Skeleton } from "@mantine/core";
 import { modals } from "@mantine/modals";
 
 import AddFriend from "../AddFriend";
@@ -72,7 +63,7 @@ export default function UsersRolesTable() {
     <div>
       <ScrollArea>
         <Table miw={100} verticalSpacing="sm">
-          <tbody>{data.length ? "No friends yet, please add someone to continue." : rows}</tbody>
+          <tbody>{rows}</tbody>
         </Table>
       </ScrollArea>
 
