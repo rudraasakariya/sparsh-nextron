@@ -1,4 +1,4 @@
-import db from "../backend/firebase/firebase";
+import db from "../firebase/firebase";
 
 export async function getUserInfo(req, res) {
   const user = await db.collection("clients").doc(await req.email).get();

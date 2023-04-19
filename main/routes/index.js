@@ -1,12 +1,12 @@
 import { Router } from "express";
 const routes = Router();
 
-import * as GoogleAuth from "../backend/googleAuthController/googleAuthController";
-import * as AppFileController from "../backend/fileController/appFileController";
-import * as ShareableFileController from "../backend/shareableFileController/shareableFileController";
+import * as GoogleAuth from "../googleAuthController/googleAuthController";
+import * as AppFileController from "../fileController/appFileController";
+import * as ShareableFileController from "../shareableFileController/shareableFileController";
 import * as FriendController from "../friendController/friendController";
-import * as UserController from "../backend/userController/userController";
-import * as AppTextController from "../backend/appTextController/appTextController";
+import * as UserController from "../userController/userController";
+import * as AppTextController from "../appTextController/appTextController";
 import CheckUser from "../middleware/CheckUser";
 
 // * Routes to handle login and authentication

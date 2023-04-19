@@ -1,9 +1,9 @@
-appId: com.sparsh.nextron
+appId: com.sparsh.app
 productName: SPARSH
 copyright: Copyright © 2023 SPARSH Inc
 directories:
   output: dist
-  buildResources: main
+  buildResources: resources
 files:
   - from: .
     filter:

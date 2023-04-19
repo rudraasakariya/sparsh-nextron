@@ -2,7 +2,7 @@
 import { io } from "socket.io-client";
 
 // * Importing Backend Modules
-import db from "../backend/firebase/firebase";
+import db from "../firebase/firebase";
 
 // * Getting the Email from the Socket.io Connection
 let email = null;
