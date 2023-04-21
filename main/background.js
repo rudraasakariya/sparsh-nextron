@@ -24,7 +24,6 @@ import * as AppTextController from "./backend/appTextController/appTextControlle
 import * as SystemFileHandler from "./backend/fileController/systemFileController";
 import * as SystemTextController from "./backend/appTextController/systemTextController";
 import * as UserController from "./backend/userController/userController";
-import routes from "./backend/routes/index.js";
 import db from "./backend/firebase/firebase";
 import oauth2Client from "./backend/googleAuthController/OAuth2Client";
 import CheckUser from "./backend/middleware/CheckUser";
@@ -237,7 +236,7 @@ ipcMain.handle("get-user-details", async (event) => {
   if (checkUser === "error") {
     return "error";
   }
-  const user = await UserController.getUserInfo(token);
+  const user = await UserController.getUserInfo(token.email);
   return user;
 });
 
@@ -256,10 +255,7 @@ ipcMain.handle("get-files", async (event) => {
     return "error";
   }
   const files = await AppFileController.getFiles(token.email);
-  return {
-    files,
-    hehe: "hehe",
-  };
+  return files;
 });
 
 ipcMain.handle("get-friends", async (event) => {

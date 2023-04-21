@@ -1,5 +1,5 @@
 // * Importing Backend Modules
-import db from "../backend/firebase/firebase";
+import db from "../firebase/firebase";
 
 const CheckUser = async (token) => {
   if(!token) return "error";
