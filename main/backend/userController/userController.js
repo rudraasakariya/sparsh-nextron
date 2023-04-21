@@ -1,8 +1,8 @@
-import db from "../backend/firebase/firebase";
+import db from "../firebase/firebase";
 
-export async function getUserInfo(token) {
-  const user = await db.collection("clients").doc(await token.email).get();
-  
+export async function getUserInfo(email) {
+  const user = await db.collection("clients").doc(email).get();
+
   return {
     email: user.data().email,
     name: user.data().name,
