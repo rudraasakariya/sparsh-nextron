@@ -1,4 +1,4 @@
-import db from "../firebase/firebase";
+import db from "../backend/firebase/firebase";
 
 // * Adding Friend to the Friend List
 export async function addFriend(user, friend) {

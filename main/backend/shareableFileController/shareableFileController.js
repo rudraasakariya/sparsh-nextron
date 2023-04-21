@@ -1,6 +1,6 @@
 import { google } from "googleapis";
-import db from "../firebase/firebase.js";
-import oauth2Client from "../googleAuthController/OAuth2Client.js";
+import db from "../backend/firebase/firebase.js";
+import oauth2Client from "../backend/googleAuthController/OAuth2Client.js";
 import fs from "fs";
 import mime from "mime-types";
 import { io } from "socket.io-client";

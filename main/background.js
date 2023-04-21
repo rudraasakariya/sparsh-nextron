@@ -210,7 +210,7 @@ async function startAuth() {
     store.get("isListening") ? store.set("isListening", false) : store.set("isListening", true);
   });
 
-  clipboardListener.on("change", () => {
+  clipboardListener.on("change", async () => {
     if (store.get("isListening")) {
       SystemFileHandler.uploadFile(token);
       store.set("isListening", false);
