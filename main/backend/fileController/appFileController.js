@@ -3,17 +3,15 @@ import oauth2Client from "../googleAuthController/OAuth2Client.js";
 import db from "../firebase/firebase.js";
 import mime from "mime-types";
 import fs from "node:fs";
-
-import { io } from "socket.io-client";
-const socketMain = io(`http://localhost:${process.env.PORT}`);
+import { ipcMain } from "electron";
 
 // * Getting Files from Google Drive and Sending to the Frontend
-export async function getFiles(req, res) {
+export async function getFiles(email) {
   const drive = google.drive({ version: "v3", auth: oauth2Client });
   // * Fetching ID from Database
   const file_ID = await db
     .collection("user-data")
-    .doc(await req.email)
+    .doc(email)
     .get();
 
   const files = [];
@@ -46,17 +44,15 @@ export async function getFiles(req, res) {
       }
     }
   }
-
-  res.send(files);
+  return files;
 }
 
 // * Uploading Files to Google Drive and Saving File ID to Database
-export async function uploadFile(req, res) {
+export async function uploadFile(filePath, email) {
   const drive = google.drive({ version: "v3", auth: oauth2Client });
   // TODO: Change the regex according to the OS
-  const filePath = req.body.filePath;
   // * String Manipulation to get the File Name and File Type
-  const fileName = filePath.split("\\").pop();
+  let fileName = filePath.split("\\").pop();
   const fileType = fileName.split(".").pop();
 
   const requestBody = {
@@ -89,29 +85,17 @@ export async function uploadFile(req, res) {
       // * Updating the File Id in the Database
       await db
         .collection("user-data")
-        .doc(await req.email)
+        .doc(email)
         .update({
           [key]: {
             id: await file.data.id,
             time: Date.now(),
           },
         });
-
-      // * Broadcast to all sockets
-      socketMain.emit("fileUploaded", {
-        id: fileMetaData.data.id,
-        name: fileMetaData.data.name,
-        webContentLink: fileMetaData.data.webContentLink,
-        webViewLink: fileMetaData.data.webViewLink,
-        time: Date.now(),
-      });
     }
 
     // * Getting File Id and Updating it
-    const data = await db
-      .collection("user-data")
-      .doc(await req.email)
-      .get();
+    const data = await db.collection("user-data").doc(email).get();
     // * Checking if the User Exists in the Database
     if (data.exists) {
       for (const fileObject in data.data()) {
@@ -148,9 +132,11 @@ export async function uploadFile(req, res) {
         }
       }
     } else {
-      res.send("User Does Not Exist");
+      return "User Does Not Exist";
     }
-    console.log("Uploaded Successfully!");
+
+    ipcMain.emit("file-uploaded");
+    return "File Uploaded Successfully";
   } catch (error) {
     throw Error(error);
   }

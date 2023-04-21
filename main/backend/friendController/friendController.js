@@ -1,12 +1,12 @@
 import db from "../firebase/firebase";
 
 // * Adding Friend to the Friend List
-export async function addFriend(req, res) {
-  const doc = (await db.collection("friends-list").doc(req.email).get()).data().friends;
-  const friendDoc = (await db.collection("friends-list").doc(req.body.friendEmail).get()).data().friends;
+export async function addFriend(user, friend) {
+  const doc = (await db.collection("friends-list").doc(user).get()).data().friends;
+  const friendDoc = (await db.collection("friends-list").doc(friend).get()).data().friends;
 
-  const data = await db.collection("clients").doc(req.email).get();
-  const friendData = await db.collection("clients").doc(req.body.friendEmail).get();
+  const data = await db.collection("clients").doc(user).get();
+  const friendData = await db.collection("clients").doc(friend).get();
   if (data.exists && friendData.exists) {
     doc.push({
       email: friendData.data().email,
@@ -19,26 +19,28 @@ export async function addFriend(req, res) {
       name: data.data().name,
       profileURL: data.data().profileURL,
     });
-    await db.collection("friends-list").doc(req.email).update({ friends: doc });
-    await db.collection("friends-list").doc(req.body.friendEmail).update({ friends: friendDoc });
-    res.status(200).send({
-      message: "Friend Added Successfully",
-      friends: doc,
-    });
+    await db.collection("friends-list").doc(user).update({ friends: doc });
+    await db.collection("friends-list").doc(friend).update({ friends: friendDoc });
+
+    return doc;
+    // res.status(200).send({
+    //   message: "Friend Added Successfully",
+    //   friends: doc,
+    // });
   } else {
-    res.status(404).send("Ask your frined to join this app");
+    return "User Does Not Exist";
   }
 }
 
 // * Getting Friend List
-export async function getFriends(req, res) {
+export async function getFriends(email) {
   try {
-    const doc = await db.collection("friends-list").doc(req.email).get();
+    const doc = await db.collection("friends-list").doc(email).get();
     if (doc.exists) {
       const frineds = doc.data().friends;
-      res.send(frineds);
+      return frineds;
     } else {
-      res.status(404).send("No Friends Found");
+      return "No Friends";
     }
   } catch (error) {
     throw error;

@@ -8,6 +8,7 @@ import { Skeleton } from "@mantine/core";
 import InputBox from "../components/InputBox";
 import { IconFiles, IconHelp, IconFriends } from "@tabler/icons-react";
 import SharedFiles from "../components/SharedFiles";
+import { ipcRenderer } from "electron";
 
 export function Home() {
   const [user, setUser] = useState({
@@ -43,15 +44,9 @@ export function Home() {
 
   // * Fetch user data
   useEffect(() => {
-    axios
-      .get(`/me`)
-      .then((res) => {
-        const user = res.data;
-        setUser(user);
-      })
-      .catch((err) => {
-        console.log(err);
-      });
+    ipcRenderer.invoke("get-user-details").then((res) => {
+      setUser(res);
+    });
   }, []);
 
   return (
@@ -75,13 +70,7 @@ export function Home() {
           className="inline-flex items-center p-2 mt-2 ml-3 text-sm text-gray-500 rounded-lg md:hidden hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-gray-200 dark:text-gray-400 dark:hover:bg-gray-700 dark:focus:ring-gray-600"
         >
           <span className="sr-only">Open sidebar</span>
-          <svg
-            className="w-6 h-6"
-            aria-hidden="true"
-            fill="currentColor"
-            viewBox="0 0 20 20"
-            xmlns="http://www.w3.org/2000/svg"
-          >
+          <svg className="w-6 h-6" aria-hidden="true" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
             <path
               clipRule="evenodd"
               fillRule="evenodd"
@@ -98,11 +87,7 @@ export function Home() {
             <div className="flex items-center pl-2.5 mb-5 pointer-events-none">
               {user ? (
                 <img
-                  src={
-                    user
-                      ? user.profileURL
-                      : "https://lh3.googleusercontent.com/a/AGNmyxbQGWVuZg8O4Z7eIK4Czpo8JgYmAy6NN1plupox=s96-c"
-                  }
+                  src={user ? user.profileURL : "https://lh3.googleusercontent.com/a/AGNmyxbQGWVuZg8O4Z7eIK4Czpo8JgYmAy6NN1plupox=s96-c"}
                   className="h-6 mr-3 sm:h-7 rounded-full"
                   alt="User Avatar"
                 />
@@ -155,20 +140,13 @@ export function Home() {
                   className="flex items-center p-2 text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700"
                 >
                   <IconFiles />
-                  <span className="flex-1 ml-3 whitespace-nowrap">
-                    Shared Files
-                  </span>
+                  <span className="flex-1 ml-3 whitespace-nowrap">Shared Files</span>
                 </a>
               </li>
               <li>
-                <a
-                  href="#"
-                  className="flex items-center p-2 text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700"
-                >
+                <a href="#" className="flex items-center p-2 text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700">
                   <IconHelp />
-                  <span className="flex-1 ml-3 whitespace-nowrap">
-                    Contact Us
-                  </span>
+                  <span className="flex-1 ml-3 whitespace-nowrap">Contact Us</span>
                 </a>
               </li>
             </ul>

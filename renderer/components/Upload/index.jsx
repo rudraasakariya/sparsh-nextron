@@ -1,5 +1,7 @@
 import axios from "axios";
 import React from "react";
+import { ipcRenderer } from "electron";
+import { notifications } from "@mantine/notifications";
 // Instructions on line 80
 
 class UploadModal {
@@ -86,14 +88,23 @@ class UploadModal {
         let reader = new FileReader();
         reader.onload = (e2) => {
           // @Rudra: This is where you can get the file data target.files[0] is the file object.
-          axios
-            .post(`/drop-upload`, {
-              filePath: target.files[0].path,
-            })
-            .then((res) => {
+            ipcRenderer.invoke("drop-upload", target.files[0].path).then((res) => {
+              // show notification file uploaded
+              notifications.show({
+                title: "File Uploaded",
+                message: "Your file has been uploaded successfully",
+                color: "green",
+                icon: <i className="fas fa-check-circle"></i>,
+              });
               this.fileDisplay(target.files[0].name);
-            })
-            .catch((err) => {
+            }).catch((err) => {
+              // show notification file uploaded
+              notifications.show({
+                title: "File Upload Failed",
+                message: "There was an error uploading your file",
+                color: "red",
+                icon: <i className="fas fa-times-circle"></i>,
+              });
               console.log(err);
             });
         };

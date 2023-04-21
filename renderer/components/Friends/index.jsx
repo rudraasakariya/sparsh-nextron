@@ -7,24 +7,24 @@ import Friend from "../Friend";
 
 import { useEffect, useState } from "react";
 import axios from "axios";
+import { ipcRenderer } from "electron";
 
 export default function UsersRolesTable() {
   const [data, setData] = useState([]);
 
   useEffect(() => {
-    // Fetch data from API
-    axios
-      .get(`/get-friends`)
+    // * Fetch Friends
+    ipcRenderer
+      .invoke("get-friends")
       .then((res) => {
-        const friends = res.data;
-        setData(friends);
+        setData(res);
       })
       .catch((err) => {
-        console.log(err);
+        return err;
       });
 
     return () => {
-      setData([]);
+      ipcRenderer.removeAllListeners("get-friends");
     };
   }, []);
 
@@ -45,7 +45,7 @@ export default function UsersRolesTable() {
             });
           }}
         >
-          <Avatar size={40} src={item.photoURL} radius={40} />
+          <Avatar size={40} src={item.profileURL} radius={40} />
           <div>
             <Text fz="sm" fw={500}>
               {item.name}
@@ -63,9 +63,7 @@ export default function UsersRolesTable() {
     <div>
       <ScrollArea>
         <Table miw={100} verticalSpacing="sm">
-          <tbody>{rows.length ? rows : (
-            "No friends yet"
-          )}</tbody>
+          <tbody>{rows.length ? rows : "No friends yet"}</tbody>
         </Table>
       </ScrollArea>
 

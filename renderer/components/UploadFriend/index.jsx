@@ -1,4 +1,4 @@
-import axios from "axios";
+import { ipcRenderer } from "electron";
 import React from "react";
 // Instructions on line 80
 
@@ -88,21 +88,16 @@ class UploadModal {
         let reader = new FileReader();
         reader.onload = (e2) => {
           // @Rudra: This is where you can get the file data target.files[0] is the file object.
-          axios
-            .post(
-              `/shareable-file`,
-              {
-                filePath: target.files[0].path,
-                friendEmail: this.friendEmail,
-              }
-            )
-            .then((res) => {
-              this.fileDisplay(target.files[0].name);
-            })
-            .catch((err) => {
-              console.log(err);
-            });
+          ipcRenderer
+          .invoke("share-file", target.files[0].path, this.friendEmail)
+          .then((res) => {
+            this.fileDisplay(target.files[0].name);
+          })
+          .catch((err) => {
+            return err;
+          });
         };
+
         reader.readAsDataURL(target.files[0]);
       }
     });

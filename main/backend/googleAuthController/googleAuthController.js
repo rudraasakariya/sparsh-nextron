@@ -4,12 +4,13 @@ import * as UserSchema from "../firebase/user-data.js";
 import axios from "axios";
 import dotenv from "dotenv";
 import { io } from "socket.io-client";
+import { ipcMain } from "electron";
 dotenv.config();
 
 const socketInstance = io(`http://localhost:${process.env.PORT}`);
 
 // * Authentication URL for handling Sign In with Google
-export async function authenticationUrl(req, res) {
+export function authenticationUrl(req, res) {
   const authUrl = oauth2Client.generateAuthUrl({
     access_type: "offline",
     scope: [
@@ -18,12 +19,9 @@ export async function authenticationUrl(req, res) {
       "https://www.googleapis.com/auth/userinfo.email",
     ],
   });
-  try {
-    res.redirect(authUrl);
-  } catch (error) {
-    res.status(400).send(error);
-  }
-}
+
+  return authUrl;
+};
 
 // * Handling OAuthCallback to create a new user
 export async function oauth2Callback(req, res) {
@@ -90,7 +88,9 @@ export async function oauth2Callback(req, res) {
           };
 
           // * Sending the `authenticated` event to the `Main Process`
-          socketInstance.emit("authenticated", userToken);
+
+          // TODO: We gotta commumnicate in the main process and it doesnt work so do something
+          ipcMain.emit("authenticated", userToken);
 
           res.send(`<script>alert("Close the window you're logged in");</script>`);
         }

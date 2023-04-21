@@ -11,7 +11,7 @@ import { exec } from "node:child_process";
 import { io } from "socket.io-client";
 const socketMain = io(`http://localhost:${process.env.PORT}`);
 
-import { clipboard, Notification } from "electron";
+import { clipboard, ipcMain } from "electron";
 
 import mime from "mime-types";
 
@@ -22,7 +22,7 @@ socketMain.on("token", (token) => {
 });
 
 // * Downloading File from Google Drive
-export async function downloadFile() {
+export async function downloadFile(email) {
   const drive = google.drive({ version: "v3", auth: oauth2Client });
   let maxTimeFile = null;
   // * Getting the file id from the database which was recently updated
@@ -63,6 +63,12 @@ export async function downloadFile() {
   const normalFilePath = path.join(os.tmpdir(), fileMetaData.data.name).toString("ucs2");
   // TODO: Change the regex according to the OS
   const filePath = path.toNamespacedPath(normalFilePath).replace("\\\\?\\", "");
+
+  // * Regex for macOS and Linux
+  // const filePath = path.join(os.tmpdir(), fileMetaData.data.name);
+  // const normalizedFilePath = path.normalize(filePath);
+  // const cleanedFilePath = normalizedFilePath.replace(/^(\.\.[\/\\])+/, '');
+
   // * Creating the File in the Temp Folder
   try {
     fs.writeFile(filePath, Buffer.from(file.data), (err) => {
@@ -70,29 +76,20 @@ export async function downloadFile() {
         exec("powershell.exe (scb -LiteralPath " + "'" + filePath + "'" + ")", (err) => {
           if (!err) {
             socketMain.emit("fileDownloaded", fileMetaData.data.name);
-            // ? Can't delte file because pasting requires instance of the file
-            // // * Deleting the File from the Temp Folder
-            // fs.unlink(filePath, (err) => {
-            //   if (err) {
-            //     console.error(err);
-            //     return;
-            //   }
-            //   console.log(`File ${filePath} deleted successfully!`);
-            // });
           }
         });
       } else {
-        console.error(err);
-        return;
+        
+        return err;
       }
     });
   } catch (err) {
-    console.log(err);
+    return err;
   }
 }
 
 // * Uploading Data to Google Drive
-export async function uploadFile() {
+export async function uploadFile(token) {
   const drive = google.drive({ version: "v3", auth: oauth2Client });
   // TODO: Change the regex according to the OS
   const filePath = clipboard.readBuffer("FileNameW").toString("ucs2").replace(/\0/g, "");
@@ -120,7 +117,7 @@ export async function uploadFile() {
       // * Updating the File Id in the Database
       await db
         .collection("user-data")
-        .doc(email)
+        .doc(token.email)
         .update({
           [key]: {
             id: await file.data.id,
@@ -129,13 +126,13 @@ export async function uploadFile() {
         });
 
       // Broadcast to all sockets
-      socketMain.emit("fileUploaded", {
+      ipcMain.emit("file-uploaded", {
         ...file.data,
       });
     }
 
     // * Getting File Id and Updating it
-    const data = await db.collection("user-data").doc(email).get();
+    const data = await db.collection("user-data").doc(token.email).get();
     for (const fileObject in data.data()) {
       // * Checking if the key is not text and if the value is empty
       if (fileObject !== "text") {
@@ -144,7 +141,6 @@ export async function uploadFile() {
         if (element.id === "" && element.time === "") {
           // * Uploading File to Google Drive
           await driveUpload(fileObject);
-          console.log("Uploading File to Google Drive as the File Id is Empty");
           break;
         } else if (element.id !== "" && element.time !== "") {
           let minTimeFile = null;
@@ -168,7 +164,7 @@ export async function uploadFile() {
         }
       }
     }
-    console.log("Uploaded Successfully!");
+    return "File Uploaded Successfully!"
   } catch (error) {
     throw Error(error);
   }
