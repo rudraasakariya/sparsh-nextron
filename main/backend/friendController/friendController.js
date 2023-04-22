@@ -1,12 +1,12 @@
-import db from "../firebase/firebase";
+import db from "../backend/firebase/firebase";
 
 // * Adding Friend to the Friend List
-export async function addFriend(email, friendEmail) {
-  const doc = (await db.collection("friends-list").doc(email).get()).data().friends;
-  const friendDoc = (await db.collection("friends-list").doc(friendEmail).get()).data().friends;
+export async function addFriend(user, friend) {
+  const doc = (await db.collection("friends-list").doc(user).get()).data().friends;
+  const friendDoc = (await db.collection("friends-list").doc(friend).get()).data().friends;
 
-  const data = await db.collection("clients").doc(email).get();
-  const friendData = await db.collection("clients").doc(friendEmail).get();
+  const data = await db.collection("clients").doc(user).get();
+  const friendData = await db.collection("clients").doc(friend).get();
   if (data.exists && friendData.exists) {
     doc.push({
       email: friendData.data().email,
@@ -19,14 +19,16 @@ export async function addFriend(email, friendEmail) {
       name: data.data().name,
       profileURL: data.data().profileURL,
     });
-    await db.collection("friends-list").doc(email).update({ friends: doc });
-    await db.collection("friends-list").doc(friendEmail).update({ friends: friendDoc });
-    res.status(200).send({
-      message: "Friend Added Successfully",
-      friends: doc,
-    });
+    await db.collection("friends-list").doc(user).update({ friends: doc });
+    await db.collection("friends-list").doc(friend).update({ friends: friendDoc });
+
+    return doc;
+    // res.status(200).send({
+    //   message: "Friend Added Successfully",
+    //   friends: doc,
+    // });
   } else {
-    res.status(404).send("Ask your frined to join this app");
+    return "User Does Not Exist";
   }
 }
 
@@ -38,7 +40,7 @@ export async function getFriends(email) {
       const frineds = doc.data().friends;
       return frineds;
     } else {
-      return [];
+      return "No Friends";
     }
   } catch (error) {
     throw error;
