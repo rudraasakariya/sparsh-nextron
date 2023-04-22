@@ -1,4 +1,3 @@
-<<<<<<< Updated upstream
 import { google } from "googleapis";
 import oauth2Client from "../googleAuthController/OAuth2Client.js";
 import db from "../firebase/firebase.js";
@@ -142,5 +141,3 @@ export async function uploadFile(filePath, email) {
     throw Error(error);
   }
 }
-=======
->>>>>>> Stashed changes

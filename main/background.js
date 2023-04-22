@@ -21,7 +21,7 @@ import * as AppFileController from "./backend/fileController/appFileController";
 import * as ShareableFileController from "./backend/shareableFileController/shareableFileController";
 import * as FriendController from "./backend/friendController/friendController";
 import * as AppTextController from "./backend/appTextController/appTextController";
-import * as SystemFileHandler from "../main/backend/fileController/systemFileController";
+import * as SystemFileHandler from "./backend/fileController/systemFileController";
 import * as SystemTextController from "./backend/appTextController/systemTextController";
 import * as UserController from "./backend/userController/userController";
 import routes from "./backend/routes/index.js";
