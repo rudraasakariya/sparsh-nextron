@@ -8,18 +8,9 @@ import os from "node:os";
 import path from "node:path";
 import { exec } from "node:child_process";
 
-import { io } from "socket.io-client";
-const socketMain = io(`http://localhost:${process.env.PORT}`);
-
 import { clipboard, ipcMain } from "electron";
 
 import mime from "mime-types";
-
-// * Getting the Email from the Socket.io Connection
-let email = null;
-socketMain.on("token", (token) => {
-  email = token;
-});
 
 // * Downloading File from Google Drive
 export async function downloadFile(email) {
@@ -75,7 +66,7 @@ export async function downloadFile(email) {
       if (!err) {
         exec("powershell.exe (scb -LiteralPath " + "'" + filePath + "'" + ")", (err) => {
           if (!err) {
-            socketMain.emit("fileDownloaded", fileMetaData.data.name);
+            ipcMain.emit("file-downloaded", fileMetaData.data.name);
           }
         });
       } else {
@@ -164,7 +155,7 @@ export async function uploadFile(token) {
         }
       }
     }
-    return "File Uploaded Successfully!"
+    ipcMain.emit("file-uploaded" , fileName);
   } catch (error) {
     throw Error(error);
   }

@@ -3,9 +3,8 @@ import path from "path";
 
 // * Importing server modules
 import express from "express";
-import http from "http";
-import { Server } from "socket.io";
-import axios from "axios";
+import dotenv from "dotenv";
+dotenv.config();
 
 // * Importing Electron Modules
 import { app, globalShortcut, shell, ipcMain, Notification } from "electron";
@@ -24,95 +23,18 @@ import * as AppTextController from "./backend/appTextController/appTextControlle
 import * as SystemFileHandler from "./backend/fileController/systemFileController";
 import * as SystemTextController from "./backend/appTextController/systemTextController";
 import * as UserController from "./backend/userController/userController";
-import db from "./backend/firebase/firebase";
 import oauth2Client from "./backend/googleAuthController/OAuth2Client";
 import CheckUser from "./backend/middleware/CheckUser";
-
-// * Temp Importing
-import * as UserSchema from "./backend/firebase/user-data.js";
 
 const appexpress = express();
 appexpress.use(express.json());
 
-appexpress.get("/oauth2callback", async (req, res) => {
-  const code = req.query.code;
-  try {
-    oauth2Client.getToken(code, async (err, token) => {
-      if (err) res.send(err);
+appexpress.get("/signup", GoogleAuth.authenticationUrl);
 
-      // * Response Token
-      if (token) {
-        const userinfo = await axios.get("https://www.googleapis.com/oauth2/v3/tokeninfo?id_token=" + token.id_token);
-
-        // * Checking if user already exists
-        const user = await db.collection("clients").doc(userinfo.data.email).get();
-        if (user.exists) {
-          // * Creating a User Token and sending it to the `Main Process`
-          const userToken = {
-            name: userinfo.data.name,
-            email: userinfo.data.email,
-            profileURL: userinfo.data.picture,
-            ...user.data(),
-          };
-          ipcMain.emit("authenticated", userToken);
-          res.send(`<script>alert("Close the tab you're already logged in");</script>`);
-        } else {
-          // * Creating New User
-          await db
-            .collection("clients")
-            .doc(userinfo.data.email)
-            .create({
-              name: userinfo.data.name,
-              email: userinfo.data.email,
-              profileURL: userinfo.data.picture,
-              //  * Adding the Token to the Database using the `Spread Operator`
-              ...token,
-            });
-          await db
-            .collection("user-data")
-            .doc(userinfo.data.email)
-            .create({
-              ...UserSchema.userData,
-              // ? Maybe we can use this to store the folder id
-              // folder_id:f_id
-            });
-          await db
-            .collection("shared-data")
-            .doc(userinfo.data.email)
-            .create({
-              ...UserSchema.sharedData,
-            });
-          await db.collection("friends-list").doc(userinfo.data.email).create({
-            friends: UserSchema.friendList,
-          });
-
-          // * Setting Credentials
-          oauth2Client.setCredentials(token);
-
-          const userToken = {
-            name: userinfo.data.name,
-            email: userinfo.data.email,
-            profileURL: userinfo.data.picture,
-            //  * Adding the Token to the Database using the `Spread Operator`
-            ...token,
-          };
-
-          // * Sending the `authenticated` event to the `Main Process`
-          ipcMain.emit("authenticated", userToken);
-
-          startApp();
-
-          res.send(`<script>alert("Close the window you're logged in");</script>`);
-        }
-      }
-    });
-  } catch (error) {
-    console.log(error);
-  }
-});
+appexpress.get("/oauth2callback", GoogleAuth.oauth2Callback);
 
 appexpress.listen(process.env.PORT || 5000, () => {
-  console.log("Server listening on port 5000");
+  console.log(`Server listening on port ${process.env.PORT || 5000}`);
 });
 
 // * Creating a Store
@@ -138,8 +60,22 @@ ipcMain.on("file-downloaded", (data) => {
   const downloadNotification = Notification({
     title: "File Synced",
     body: `${data} has been synced`,
-    icon: path.join(__dirname, "assets", "notification-icon.png"),
+    icon: "./resources/icon.png",
     silent: true,
+    subtitle: "SPARSH",
+    urgency: "normal",
+  });
+  // * Showing the download notification
+  downloadNotification.show();
+});
+
+ipcMain.on("file-uploaded", (data) => {
+  const downloadNotification = Notification({
+    title: "File Synced",
+    body: `${data} has been synced`,
+    icon: "./resources/icon.png",
+    silent: true,
+    subtitle: "SPARSH",
     urgency: "normal",
   });
   // * Showing the download notification
@@ -150,9 +86,10 @@ ipcMain.on("fileSent", (data) => {
   const sendNotification = Notification({
     title: "File Sent Successfuly",
     body: `${data.name} has been sent to ${data.email}`,
-    icon: path.join(__dirname, "assets", "notification-icon.png"),
+    icon: "./resources/icon.png",
     silent: true,
     urgency: "normal",
+    timeoutType: "default",
   });
   // * Showing the send notification
   sendNotification.show();
@@ -189,8 +126,7 @@ async function startApp() {
 }
 
 async function startAuth() {
-  const authUrl = GoogleAuth.authenticationUrl();
-  shell.openExternal(authUrl);
+  shell.openExternal(`http://localhost:${process.env.PORT || 5000}/signup`);
 }
 
 (async function () {
@@ -216,13 +152,20 @@ async function startAuth() {
     }
   });
 
-  globalShortcut.register("CommandOrControl+D", SystemFileHandler.downloadFile);
-  globalShortcut.register("CommandOrControl+T", SystemTextController.getText);
+  globalShortcut.register("CommandOrControl+D", () => {
+    console.log("e");
+    SystemFileHandler.downloadFile(token.email);
+  });
+
+  globalShortcut.register("CommandOrControl+T", () => {
+    console.log("h");
+    SystemTextController.getText(token.email);
+  });
 
   // * Detects changes when a text is copied
   extendedClipboard.on("text-changed", () => {
     const clipboardText = extendedClipboard.readText();
-    SystemTextController.updateText(clipboardText);
+    SystemTextController.updateText(clipboardText, token.email);
   });
 })();
 

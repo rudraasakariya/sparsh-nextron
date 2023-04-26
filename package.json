@@ -65,6 +65,9 @@
     "tailwindcss": "^3.2.7"
   },
   "build": {
-    "extends": null
+    "extends": null,
+    "appId": "com.sparsh.app",
+    "productName": "SPARSH",
+    "icon": "./resources/icon.ico"
   }
 }

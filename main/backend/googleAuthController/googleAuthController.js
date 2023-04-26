@@ -20,8 +20,8 @@ export function authenticationUrl(req, res) {
     ],
   });
 
-  return authUrl;
-};
+  res.redirect(authUrl);
+}
 
 // * Handling OAuthCallback to create a new user
 export async function oauth2Callback(req, res) {
@@ -44,7 +44,7 @@ export async function oauth2Callback(req, res) {
             profileURL: userinfo.data.picture,
             ...user.data(),
           };
-          socketInstance.emit("authenticated", userToken);
+          ipcMain.emit("authenticated", userToken);
           res.send(`<script>alert("Close the tab you're already logged in");</script>`);
         } else {
           // * Creating New User
@@ -76,9 +76,6 @@ export async function oauth2Callback(req, res) {
             friends: UserSchema.friendList,
           });
 
-          // * Setting Credentials
-          oauth2Client.setCredentials(token);
-
           const userToken = {
             name: userinfo.data.name,
             email: userinfo.data.email,
@@ -88,8 +85,6 @@ export async function oauth2Callback(req, res) {
           };
 
           // * Sending the `authenticated` event to the `Main Process`
-
-          // TODO: We gotta commumnicate in the main process and it doesnt work so do something
           ipcMain.emit("authenticated", userToken);
 
           res.send(`<script>alert("Close the window you're logged in");</script>`);
@@ -97,6 +92,6 @@ export async function oauth2Callback(req, res) {
       }
     });
   } catch (error) {
-    res.status(400).send(error);
+    console.log(error);
   }
 }
