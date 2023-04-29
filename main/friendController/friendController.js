@@ -21,12 +21,11 @@ export async function addFriend(email, friendEmail) {
     });
     await db.collection("friends-list").doc(email).update({ friends: doc });
     await db.collection("friends-list").doc(friendEmail).update({ friends: friendDoc });
-    res.status(200).send({
-      message: "Friend Added Successfully",
-      friends: doc,
-    });
+    return {
+      frineds: doc,
+    };
   } else {
-    res.status(404).send("Ask your frined to join this app");
+    return "User Not Found";
   }
 }
 

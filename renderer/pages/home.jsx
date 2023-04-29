@@ -3,7 +3,6 @@ import Upload from "../components/Upload";
 import Friends from "../components/Friends";
 import { useEffect, useState } from "react";
 import { modals } from "@mantine/modals";
-import axios from "axios";
 import { Skeleton } from "@mantine/core";
 import InputBox from "../components/InputBox";
 import { IconFiles, IconHelp, IconFriends } from "@tabler/icons-react";

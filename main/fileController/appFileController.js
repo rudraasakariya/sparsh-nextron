@@ -106,7 +106,6 @@ export async function uploadFile(filePath, email) {
           if (element.id === "" && element.time === "") {
             // * Uploading File to Google Drive
             await driveUpload(fileObject);
-            console.log("Uploading File to Google Drive as the File Id is Empty");
             break;
           } else if (element.id !== "" && element.time !== "") {
             let minTimeFile = null;
@@ -138,6 +137,6 @@ export async function uploadFile(filePath, email) {
     ipcMain.emit("file-uploaded");
     return "File Uploaded Successfully";
   } catch (error) {
-    throw Error(error);
+    return error;
   }
 }

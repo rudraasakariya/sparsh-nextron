@@ -71,13 +71,6 @@ export default function createWindow(windowName, options) {
         contextIsolation: false,
       ...options.webPreferences,
     },
-    // webPreferences: {
-    //   // preload: "../../renderer/preload.js",
-    //   contextIsolation: true,
-    //   worldSafeExecuteJavaScript: true,
-    //   allowRunningInsecureContent: false,
-    //   ...options.webPreferences,
-    // },
   });
 
   win.on("close", saveState);

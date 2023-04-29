@@ -7,8 +7,6 @@ import { io } from "socket.io-client";
 import { ipcMain } from "electron";
 dotenv.config();
 
-const socketInstance = io(`http://localhost:${process.env.PORT}`);
-
 // * Authentication URL for handling Sign In with Google
 export function authenticationUrl(req, res) {
   const authUrl = oauth2Client.generateAuthUrl({
@@ -19,7 +17,6 @@ export function authenticationUrl(req, res) {
       "https://www.googleapis.com/auth/userinfo.email",
     ],
   });
-
   res.redirect(authUrl);
 }
 

@@ -54,8 +54,6 @@ export async function uploadFile(filePath, friendEmail, email) {
           if (err) {
             // Handle error
             console.error(err);
-          } else {
-            console.log("Permission ID: ", permission.data.id);
           }
         }
       );

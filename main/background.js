@@ -15,16 +15,16 @@ import serve from "electron-serve";
 import { createWindow } from "./helpers";
 
 // * Importing Backend Modules
-import * as GoogleAuth from "./backend/googleAuthController/googleAuthController";
-import * as AppFileController from "./backend/fileController/appFileController";
-import * as ShareableFileController from "./backend/shareableFileController/shareableFileController";
-import * as FriendController from "./backend/friendController/friendController";
-import * as AppTextController from "./backend/appTextController/appTextController";
-import * as SystemFileHandler from "./backend/fileController/systemFileController";
-import * as SystemTextController from "./backend/appTextController/systemTextController";
-import * as UserController from "./backend/userController/userController";
-import oauth2Client from "./backend/googleAuthController/OAuth2Client";
-import CheckUser from "./backend/middleware/CheckUser";
+import * as GoogleAuth from "./googleAuthController/googleAuthController";
+import * as AppFileController from "./fileController/appFileController";
+import * as ShareableFileController from "./shareableFileController/shareableFileController";
+import * as FriendController from "./friendController/friendController";
+import * as AppTextController from "./appTextController/appTextController";
+import * as SystemFileHandler from "./fileController/systemFileController";
+import * as SystemTextController from "./appTextController/systemTextController";
+import * as UserController from "./userController/userController";
+import oauth2Client from "./googleAuthController/OAuth2Client";
+import CheckUser from "./middleware/CheckUser";
 
 const appexpress = express();
 appexpress.use(express.json());
@@ -33,14 +33,16 @@ appexpress.get("/signup", GoogleAuth.authenticationUrl);
 
 appexpress.get("/oauth2callback", GoogleAuth.oauth2Callback);
 
-appexpress.listen(process.env.PORT || 5000, () => {
-  console.log(`Server listening on port ${process.env.PORT || 5000}`);
+appexpress.listen(8080, () => {
+  console.log(`Server listening on port ${process.env.PORT}`);
 });
 
 // * Creating a Store
 const store = new Store({
   name: "sparsh-user-data",
 });
+
+store.openInEditor();
 // * Checking if the token exists and setting credentials
 let token = store.get("user-token");
 
@@ -111,12 +113,12 @@ async function startApp() {
   });
 
   if (isProd) {
-    await mainWindow.loadURL("app://./home.html");
+    await mainWindow.loadURL("../app/home.html`");
   } else {
     const port = process.argv[2];
     await mainWindow.loadURL(`http://localhost:${port}/home`);
     // Remove the top menu bar
-    // mainWindow.removeMenu();
+    mainWindow.removeMenu();
     // mainWindow.webContents.openDevTools();
   }
 
@@ -126,7 +128,7 @@ async function startApp() {
 }
 
 async function startAuth() {
-  shell.openExternal(`http://localhost:${process.env.PORT || 5000}/signup`);
+  shell.openExternal(`http://localhost:8080/signup`);
 }
 
 (async function () {
@@ -153,12 +155,10 @@ async function startAuth() {
   });
 
   globalShortcut.register("CommandOrControl+D", () => {
-    console.log("e");
     SystemFileHandler.downloadFile(token.email);
   });
 
-  globalShortcut.register("CommandOrControl+T", () => {
-    console.log("h");
+  globalShortcut.register("CommandOrControl+J", () => {
     SystemTextController.getText(token.email);
   });
 
